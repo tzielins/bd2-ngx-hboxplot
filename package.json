@@ -12,6 +12,25 @@
   },
   "private": true,
   "dependencies": {
+    "@types/d3-array": "1.2",
+    "@types/d3-axis": "1.0",
+    "@types/d3-scale": "1.0",
+    "@types/d3-selection": "1.0",
+    "@types/d3-selection-multi": "1.0",
+    "@types/d3-shape": "1.0",
+    "@types/d3-transition": "1.0",
+    "d3-array": "1.2",
+    "d3-axis": "1.0",
+    "d3-scale": "1.0",
+    "d3-selection": "1.0",
+    "d3-selection-multi": "1.0",
+    "d3-shape": "1.0",
+    "d3-transition": "1.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.0.0"
+  },
+  "devDependencies": {
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -22,9 +41,7 @@
     "@angular/router": "^4.0.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.1.0",
-    "zone.js": "^0.8.4"
-  },
-  "devDependencies": {
+    "zone.js": "^0.8.4",
     "@angular/cli": "1.0.0",
     "@angular/compiler-cli": "^4.0.0",
     "@types/jasmine": "2.5.38",

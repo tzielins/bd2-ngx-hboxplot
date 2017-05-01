@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
 import {AppComponent} from './app.component';
-import {VBoxPlotModule} from "../lib/vbox-plot/vbox-plot.module";
+import {HBoxPlotModule} from "../lib/hbox-plot/hbox-plot.module";
 
 @NgModule({
   declarations: [
@@ -14,7 +14,7 @@ import {VBoxPlotModule} from "../lib/vbox-plot/vbox-plot.module";
     BrowserModule,
     FormsModule,
     HttpModule,
-    VBoxPlotModule
+    HBoxPlotModule
   ],
   providers: [],
   bootstrap: [AppComponent]

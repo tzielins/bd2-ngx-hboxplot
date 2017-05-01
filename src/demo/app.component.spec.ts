@@ -1,12 +1,12 @@
 import { TestBed, async } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
-import {VBoxPlotModule} from "../lib/vbox-plot/vbox-plot.module";
+import {HBoxPlotModule} from "../lib/hbox-plot/hbox-plot.module";
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [VBoxPlotModule],
+      imports: [HBoxPlotModule],
       declarations: [
         AppComponent
       ],

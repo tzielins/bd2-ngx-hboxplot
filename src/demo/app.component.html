@@ -1,6 +1,34 @@
-<h1>
-  {{title}}
-</h1>
+<div class="container central-area">
+  <div class="row">
 
-<bd2-ngx-vbox-plot>
-</bd2-ngx-vbox-plot>
+    <div class="col-md-12">
+      <h1>
+        {{title}}
+      </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-9">
+
+      <bd2-ngx-hbox-plot
+        [data]="data"
+      >
+      </bd2-ngx-hbox-plot>
+      {{detection()}}
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
+      </div>
+      <div class="form-group">
+        <label>Data:</label>
+        <ul class="list-unstyled" style="margin: 1em;">
+          <li *ngFor="let row of data">[{{row}}],</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+

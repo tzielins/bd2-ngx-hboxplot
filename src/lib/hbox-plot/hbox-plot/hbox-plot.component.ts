@@ -3,25 +3,41 @@ import {
   ElementRef, SimpleChanges, ChangeDetectionStrategy
 } from '@angular/core';
 import {D3, d3, Selection, ScaleLinear} from "../../d3service";
+import {Axis} from "d3-axis";
+import {ScaleBand} from "d3-scale";
 
 
 export interface LookAndFeel {
-  mainMargin: number;
+  vMargin: number;
+  hMargin: number;
   rowWidth: number;
 
-  workspaceWidth?: number;
-  workspaceHeight?: number;
-
-  xScale?: ScaleLinear<number, number>;
 }
 
 export let defualtLookAndFeel: () => LookAndFeel = function () {
   let look: LookAndFeel = {
-    mainMargin: 10,
+    vMargin: 25,
+    hMargin: 20,
     rowWidth: 30,
   };
   return look;
 };
+
+export class GraphicContext {
+  workspaceWidth: number;
+  workspaceHeight: number;
+
+  axisWrapper: Selection<SVGGElement, any, null, undefined>;
+  xScale: ScaleLinear<number, number>;
+  xTopAxis: Axis<number | { valueOf(): number }>;
+  xBottomAxis: Axis<number | { valueOf(): number }>;
+
+  yScale: ScaleBand<string>;
+  yLeftAxis: Axis<string>;
+  yRightAxis: Axis<string>;
+  //yRightAxis: Selection<SVGGElement, any, null, undefined>;
+}
+
 
 @Component({
   selector: 'bd2-ngx-hbox-plot',
@@ -47,6 +63,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   private mainPane: Selection<SVGGElement, any, null, undefined>;
 
   private lookAndFeel = defualtLookAndFeel();
+  private graphicContext = new GraphicContext();
 
   constructor(private ngZone: NgZone, private changeDetectorRef: ChangeDetectorRef, element: ElementRef) {
     this.d3 = d3;
@@ -95,12 +112,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   updatePlot() {
 
-    this.preparePane(this.data, this.lookAndFeel);
+    this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
 
-    this.plotAxisBox(this.data, this.domain, this.lookAndFeel, this.mainPane);
+    this.graphicContext = this.plotAxisBox(this.data, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
   }
 
-  preparePane(data: number[], lookAndFeel: LookAndFeel) {
+  preparePane(data: number[], lookAndFeel: LookAndFeel, graphicContext: GraphicContext): GraphicContext {
 
     //console.log("PP",data);
 
@@ -115,14 +132,16 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
 
     let pWidth = 500;
-    let pHeight = this.calculateWorkspaceHeight(data, lookAndFeel) + 2 * lookAndFeel.mainMargin;
+    let pHeight = this.calculateWorkspaceHeight(data, lookAndFeel) + 2 * lookAndFeel.vMargin;
 
     this.d3Svg.attr('viewBox', '0 0 ' + pWidth + ' ' + pHeight);
-    this.mainPane.attr('transform', 'translate(' + lookAndFeel.mainMargin + ',' + lookAndFeel.mainMargin + ')');
+    this.mainPane.attr('transform', 'translate(' + lookAndFeel.hMargin + ',' + lookAndFeel.vMargin + ')');
     //.attr('transform', 'translate(' + (pWidth / 2) + ',' + (pHeight / 2) + ')'); //moves 0,0 of the pain to the middle of the graphics
 
-    lookAndFeel.workspaceWidth = pWidth - 2 * lookAndFeel.mainMargin;
-    lookAndFeel.workspaceHeight = pHeight - 2 * lookAndFeel.mainMargin;
+    graphicContext.workspaceWidth = pWidth - 2 * lookAndFeel.hMargin;
+    graphicContext.workspaceHeight = pHeight - 2 * lookAndFeel.vMargin;
+
+    return graphicContext;
 
   }
 
@@ -131,11 +150,17 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
-  plotAxisBox(data: number[], domain: number[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>) {
+  plotAxisBox(data: number[], domain: number[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
+              graphicContext: GraphicContext): GraphicContext {
 
-    let axisWrapper = this.initAxisWrapper(mainPane);
+    if (!graphicContext.axisWrapper) {
+      graphicContext.axisWrapper = this.initAxisWrapper(mainPane);
+    }
 
-    this.plotHorizontalScales(domain, lookAndFeel, axisWrapper);
+    graphicContext = this.plotHorizontalScales(domain, lookAndFeel, graphicContext);
+    graphicContext = this.plotVerticalScales(data, lookAndFeel, graphicContext);
+
+    return graphicContext;
 
   }
 
@@ -147,36 +172,86 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
       wrapper.append("g").attr("class", "xTopAxis");
       wrapper.append("g").attr("class", "xBottomAxis");
+      wrapper.append("g").attr("class", "yLeftAxis");
+      wrapper.append("g").attr("class", "yRightAxis");
+
     }
     return wrapper;
   }
 
-  private xTopAxis: any;
+  plotHorizontalScales(domain: number[], lookAndFeel: LookAndFeel, graphicContext: GraphicContext): GraphicContext {
 
-  plotHorizontalScales(domain: number[], lookAndFeel: LookAndFeel, axisWrapper: Selection<SVGGElement, any, null, undefined>) {
-
-    if (!lookAndFeel.xScale) {
-      lookAndFeel.xScale = d3.scaleLinear()
+    if (!graphicContext.xScale) {
+      graphicContext.xScale = d3.scaleLinear()
         .clamp(true);
     }
 
-    domain[1] += Math.random() * 2;
-    lookAndFeel.xScale
+    //domain[1] += Math.random() * 2;
+    graphicContext.xScale
       .domain(domain)
-      .range([0, lookAndFeel.workspaceWidth]);
+      .range([0, graphicContext.workspaceWidth]);
 
-    if (!this.xTopAxis) {
-      this.xTopAxis = d3.axisBottom(lookAndFeel.xScale);
-
-
+    if (!graphicContext.xTopAxis) {
+      graphicContext.xTopAxis = d3.axisTop(graphicContext.xScale);
     }
-    
-    axisWrapper.select("g.xTopAxis")
-    //.append("g")
-    //.attr("transform", "translate(0,30)")
-      .call(this.xTopAxis);
 
+    if (!graphicContext.xBottomAxis) {
+      graphicContext.xBottomAxis = d3.axisBottom(graphicContext.xScale);
+    }
+
+
+    graphicContext.axisWrapper
+      .select("g.xTopAxis")
+      .call(graphicContext.xTopAxis);
+
+    graphicContext.axisWrapper
+      .select("g.xBottomAxis")
+      .attr("transform", "translate(0," + graphicContext.workspaceHeight + ")")
+      .call(graphicContext.xBottomAxis);
+
+    return graphicContext;
 
   }
+
+  plotVerticalScales(data: any[], lookAndFeel: LookAndFeel, graphicContext: GraphicContext): GraphicContext {
+
+    if (!graphicContext.yScale) {
+      graphicContext.yScale = d3.scaleBand()
+        .padding(10)
+      ;
+    }
+
+    let domain = data.map((d, i) => '' + (i + 1));
+
+    graphicContext.yScale
+      .domain(domain)
+      .range([0, graphicContext.workspaceHeight]);
+
+    if (!graphicContext.yLeftAxis) {
+      graphicContext.yLeftAxis = d3.axisLeft(graphicContext.yScale)
+      //.tickFormat( () => "")
+      ;
+    }
+
+    if (!graphicContext.yRightAxis) {
+      graphicContext.yRightAxis = d3.axisRight(graphicContext.yScale)
+        .tickValues([])
+      ;
+    }
+
+    graphicContext.axisWrapper
+      .select("g.yLeftAxis")
+      .call(graphicContext.yLeftAxis);
+
+
+    graphicContext.axisWrapper
+      .select("g.yRightAxis")
+      .attr("transform", "translate(" + graphicContext.workspaceWidth + ",0)")
+      .call(graphicContext.yRightAxis);
+
+    return graphicContext;
+
+  }
+
 
 }

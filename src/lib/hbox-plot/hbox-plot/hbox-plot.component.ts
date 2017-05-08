@@ -5,6 +5,8 @@ import {
 import {D3, d3, Selection, ScaleLinear} from "../../d3service";
 import {Axis} from "d3-axis";
 import {ScaleBand} from "d3-scale";
+import {BoxUtil} from "../box-util";
+import {BD2ColorPalette} from "../color-palette";
 
 
 export interface LookAndFeel {
@@ -12,6 +14,12 @@ export interface LookAndFeel {
   hMargin: number;
   rowWidth: number;
 
+  boxStrokeWidth: string;
+  boxFillOpacity: number;
+
+  outliersStrokeWidth: string;
+  outliersCircleRadius: number;
+  outliersFillOpacity: number;
 }
 
 export let defualtLookAndFeel: () => LookAndFeel = function () {
@@ -19,6 +27,14 @@ export let defualtLookAndFeel: () => LookAndFeel = function () {
     vMargin: 25,
     hMargin: 20,
     rowWidth: 30,
+
+    boxStrokeWidth: '2px',
+    boxFillOpacity: 0.35,
+
+    outliersStrokeWidth: '1px',
+    outliersCircleRadius: 2,
+    outliersFillOpacity: 0.25,
+
   };
   return look;
 };
@@ -36,12 +52,17 @@ export class GraphicContext {
   yLeftAxis: Axis<string>;
   yRightAxis: Axis<string>;
   //yRightAxis: Selection<SVGGElement, any, null, undefined>;
+
+  pallete: string[];
+  dataPallete: (d, i) => string;
+
+  dataWrapper: Selection<SVGGElement, any, null, undefined>;
 }
 
 
 @Component({
   selector: 'bd2-ngx-hbox-plot',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  //changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="hbox-plot" style="border: 1px solid red;"></div>
   `,
@@ -52,7 +73,7 @@ export class GraphicContext {
 export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   @Input()
-  data: number[];
+  data: number[][];
 
   @Input()
   domain: number[] = [17, 36];
@@ -64,6 +85,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   private lookAndFeel = defualtLookAndFeel();
   private graphicContext = new GraphicContext();
+  private boxUtil = new BoxUtil();
 
   constructor(private ngZone: NgZone, private changeDetectorRef: ChangeDetectorRef, element: ElementRef) {
     this.d3 = d3;
@@ -115,9 +137,21 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
 
     this.graphicContext = this.plotAxisBox(this.data, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
+
+    this.graphicContext = this.updatePallete(this.data, this.graphicContext);
+
+    this.graphicContext = this.plotDataBoxes(this.data, this.lookAndFeel, this.mainPane, this.graphicContext);
   }
 
-  preparePane(data: number[], lookAndFeel: LookAndFeel, graphicContext: GraphicContext): GraphicContext {
+  updatePallete(data: any[], graphicContext: GraphicContext): GraphicContext {
+
+    graphicContext.pallete = BD2ColorPalette.pallete(data.length);
+    graphicContext.dataPallete = (d, i) => graphicContext.pallete[i % graphicContext.pallete.length];
+
+    return graphicContext;
+  }
+
+  preparePane(data: any[], lookAndFeel: LookAndFeel, graphicContext: GraphicContext): GraphicContext {
 
     //console.log("PP",data);
 
@@ -150,7 +184,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
-  plotAxisBox(data: number[], domain: number[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
+  plotAxisBox(data: any[], domain: number[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
               graphicContext: GraphicContext): GraphicContext {
 
     if (!graphicContext.axisWrapper) {
@@ -217,7 +251,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     if (!graphicContext.yScale) {
       graphicContext.yScale = d3.scaleBand()
-        .padding(10)
+        .padding(0.2)
       ;
     }
 
@@ -253,5 +287,91 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
+  plotDataBoxes(data: number[][], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
+                graphicContext: GraphicContext): GraphicContext {
+
+    if (!graphicContext.dataWrapper) {
+      graphicContext.dataWrapper = mainPane.append<SVGGElement>("g").attr("class", "dataWrapper");
+    }
+    ;
+
+    let boxes = this.boxUtil.dataToBoxes(data);
+
+    let boxWidgets = graphicContext.dataWrapper.selectAll(".boxWidget")
+      .data(boxes);
+
+    let newBoxWidgets = boxWidgets.enter()
+      .append<SVGGElement>("g").attr("class", "boxWidget");
+
+    this.createBoxWidgets(newBoxWidgets, graphicContext);
+
+    boxWidgets.exit().remove();
+
+
+    return graphicContext;
+  }
+
+  createBoxWidgets(newBoxWidgets: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext) {
+
+    newBoxWidgets.append("rect")
+      .attr("class", "box")
+      .attr("x", (d, i) => graphicContext.xScale(d.fstQnt))
+      .attr("y", (d, i) => {
+        return graphicContext.yScale('' + (i + 1));
+      })
+      .attr("width", (d, i) => (graphicContext.xScale(d.thrdQnt) - graphicContext.xScale(d.fstQnt)))
+      .attr("height", (d, i) => {
+        return graphicContext.yScale.bandwidth();
+      })
+      .style("stroke-width", this.lookAndFeel.boxStrokeWidth)
+      .style("stroke", this.graphicContext.dataPallete)
+      .style("fill", this.graphicContext.dataPallete)
+      .style("fill-opacity", this.lookAndFeel.boxFillOpacity)
+    ;
+
+    newBoxWidgets.append("line")
+      .attr("class", "medianline")
+      .attr("x1", (d, i) => graphicContext.xScale(d.median))
+      .attr("y1", (d, i) => graphicContext.yScale('' + (i + 1)))
+      .attr("x2", (d, i) => graphicContext.xScale(d.median))
+      .attr("y2", (d, i) => graphicContext.yScale('' + (i + 1)) + graphicContext.yScale.bandwidth())
+      .style("stroke-width", this.lookAndFeel.boxStrokeWidth)
+      .style("stroke", this.graphicContext.dataPallete);
+    //.style("stroke-dasharray", "5 5")
+
+    newBoxWidgets
+      .append("line")
+      .attr("class", "meanline")
+      .attr("x1", (d, i) => graphicContext.xScale(d.mean))
+      .attr("y1", (d, i) => graphicContext.yScale('' + (i + 1)))
+      .attr("x2", (d, i) => graphicContext.xScale(d.mean))
+      .attr("y2", (d, i) => graphicContext.yScale('' + (i + 1)) + graphicContext.yScale.bandwidth())
+      .style("stroke-width", this.lookAndFeel.boxStrokeWidth)
+      .style("stroke", this.graphicContext.dataPallete)
+      .style("stroke-dasharray", "3 3")
+      .filter(d => d.mean === d.median)
+      .style("visibility", "hidden");
+
+    ;
+
+    let outliers = newBoxWidgets.append<SVGGElement>("g").attr("class", "outliers");
+
+
+    let colorsFun = (d: number[]) => this.graphicContext.pallete[d[1]];
+
+    outliers.selectAll(".outlier")
+      .data(d => d.outliers.map(x => [x, d.ix]))
+      .enter()
+      .append("circle")
+      .attr("class", "outlier")
+      .attr("cx", d => graphicContext.xScale(d[0]))
+      .attr("cy", d => graphicContext.yScale('' + (d[1] + 1)) + graphicContext.yScale.bandwidth() / 2)
+      .attr("r", this.lookAndFeel.outliersCircleRadius)
+      .style("stroke-width", this.lookAndFeel.outliersStrokeWidth)
+      .style("stroke", colorsFun)
+      .style("fill", colorsFun)
+      .style("fill-opacity", this.lookAndFeel.outliersFillOpacity);
+
+  }
 
 }

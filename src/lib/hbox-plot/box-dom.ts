@@ -1,0 +1,12 @@
+
+export class BoxDefinition {
+  median: number;
+  mean: number;
+  fstQnt: number;
+  thrdQnt: number;
+  lowWskr: number;
+  highWskr: number;
+  outliers: number[] = [];
+  ix: number;
+}
+

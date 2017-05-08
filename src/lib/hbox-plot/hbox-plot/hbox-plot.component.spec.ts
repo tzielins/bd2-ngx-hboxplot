@@ -3,7 +3,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {HBoxPlotComponent, defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.component';
 import {D3, d3, Selection} from "../../d3service";
 
-fdescribe('HBoxPlotComponent', () => {
+describe('HBoxPlotComponent', () => {
   let component: HBoxPlotComponent;
   let fixture: ComponentFixture<HBoxPlotComponent>;
   let lookAndFeel: LookAndFeel;
@@ -172,7 +172,7 @@ fdescribe('HBoxPlotComponent', () => {
 
     });
 
-    it("plotVerticalScales places x axis in correct positions", () => {
+    it("plotVerticalScales places y axis in correct positions", () => {
 
       graphicContext = component.plotVerticalScales(data, lookAndFeel, graphicContext);
 

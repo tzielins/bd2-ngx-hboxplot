@@ -11,6 +11,7 @@ export class BoxUtil {
     return data.map((v, ix) => {
       let b = this.datumToBox(v);
       b.ix = ix;
+      b.key = (ix + 1) + '.';
       return b;
     });
   }

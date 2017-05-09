@@ -8,5 +8,7 @@ export class BoxDefinition {
   highWskr: number;
   outliers: number[] = [];
   ix: number;
+  key: string;
+  color: string;
 }
 

@@ -35,9 +35,11 @@ describe('BoxUtil', () => {
       expect(boxes.length).toBe(2);
       expect(boxes[0].median).toBe(5);
       expect(boxes[0].ix).toBe(0);
+      expect(boxes[0].key).toBe("1.");
 
       expect(boxes[1].median).toBe(4);
       expect(boxes[1].ix).toBe(1);
+      expect(boxes[1].key).toBe("2.");
     });
   });
 

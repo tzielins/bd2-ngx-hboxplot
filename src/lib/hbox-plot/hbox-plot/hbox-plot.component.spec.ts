@@ -2,12 +2,16 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {HBoxPlotComponent, defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.component';
 import {D3, d3, Selection} from "../../d3service";
+import {BD2ColorPalette} from "../color-palette";
+import {BoxDefinition} from "../box-dom";
+import {BoxUtil} from "../box-util";
 
 describe('HBoxPlotComponent', () => {
   let component: HBoxPlotComponent;
   let fixture: ComponentFixture<HBoxPlotComponent>;
   let lookAndFeel: LookAndFeel;
   let graphicContext: GraphicContext;
+  let boxUtil = new BoxUtil();
 
   let getMains = (f: ComponentFixture<HBoxPlotComponent>) => {
 
@@ -40,6 +44,21 @@ describe('HBoxPlotComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('colorBoxes adds colors from the pallete', () => {
+
+    graphicContext.pallete = BD2ColorPalette.pallete(5);
+    let boxes: BoxDefinition[] = [];
+    boxes.push(new BoxDefinition());
+    boxes.push(new BoxDefinition());
+    boxes[0].ix = 0;
+    boxes[1].ix = 3;
+
+    component.colorBoxes(boxes, graphicContext);
+    expect(boxes[0].color).toBe(graphicContext.pallete[0]);
+    expect(boxes[1].color).toBe(graphicContext.pallete[3]);
+
   });
 
   describe("Initialization", () => {
@@ -98,7 +117,7 @@ describe('HBoxPlotComponent', () => {
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
 
       expect(graphicContext.workspaceHeight).toBeGreaterThan(10);
-      expect(graphicContext.workspaceWidth).toBe(500 - 2 * lookAndFeel.hMargin);
+      expect(graphicContext.workspaceWidth).toBe(500 - lookAndFeel.hMarginL - lookAndFeel.hMarginR);
 
     });
 
@@ -138,11 +157,13 @@ describe('HBoxPlotComponent', () => {
   describe('axis', () => {
 
     let mainPane: Selection<SVGGElement, any, null, undefined>;
-    let data = [1];
+    let data: BoxDefinition[];
 
     beforeEach(() => {
 
+      let d = [[1]];
 
+      data = boxUtil.dataToBoxes(d);
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       mainPane = getMains(fixture)[1];
       graphicContext.axisWrapper = component.initAxisWrapper(mainPane);
@@ -177,7 +198,7 @@ describe('HBoxPlotComponent', () => {
       graphicContext = component.plotVerticalScales(data, lookAndFeel, graphicContext);
 
       expect(graphicContext.yScale).toBeTruthy();
-      expect(graphicContext.yScale.domain()).toEqual(["1"]);
+      expect(graphicContext.yScale.domain()).toEqual(["1."]);
 
       expect(graphicContext.yLeftAxis).toBeTruthy();
       let ly = graphicContext.axisWrapper.select("g.yLeftAxis");

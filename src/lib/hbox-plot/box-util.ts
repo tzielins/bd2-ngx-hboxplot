@@ -8,10 +8,18 @@ export class BoxUtil {
       return [];
     }
 
+    let LET = "ABCDEFGHIJKLMN ";
+
     return data.map((v, ix) => {
       let b = this.datumToBox(v);
       b.ix = ix;
       b.key = (ix + 1) + '.';
+      let s = Math.random() * 12 + 1;
+
+      b.label = b.key;
+      for (let i = 0; i < s; i++) {
+        b.label += LET[Math.round(Math.random() * (LET.length - 1))];
+      }
       return b;
     });
   }

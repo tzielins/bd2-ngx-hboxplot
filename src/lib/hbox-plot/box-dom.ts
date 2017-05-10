@@ -9,6 +9,7 @@ export class BoxDefinition {
   outliers: number[] = [];
   ix: number;
   key: string;
+  label: string;
   color: string;
 }
 

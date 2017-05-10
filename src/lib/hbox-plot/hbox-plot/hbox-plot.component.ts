@@ -29,7 +29,7 @@ export interface LookAndFeel {
 export let defualtLookAndFeel: () => LookAndFeel = function () {
   let look: LookAndFeel = {
     vMargin: 25,
-    hMarginL: 30,
+    hMarginL: 20,
     hMarginR: 15,
     rowWidth: 30,
 
@@ -66,9 +66,11 @@ export class GraphicContext {
 
   tooltipWrapper: Selection<SVGGElement, any, null, undefined>;
   tooltipText: Selection<SVGGElement, any, null, undefined>;
+  tooltipBox: Selection<SVGGElement, any, null, undefined>;
   //showTooltip: (v: number, x: any, y: any) => void;
   //hideTooltip: () => void;
 
+  labelsWrapper: Selection<SVGGElement, any, null, undefined>;
 }
 
 
@@ -174,6 +176,93 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = this.plotDataBoxes(boxes, this.lookAndFeel, this.mainPane, this.graphicContext);
 
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
+
+    this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.graphicContext);
+  }
+
+  prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext): GraphicContext {
+
+    if (!graphicContext.labelsWrapper) {
+      graphicContext.labelsWrapper = mainPane.append<SVGGElement>('g')
+        .classed("labelsWrapper", true);
+    }
+
+    let labels = graphicContext.labelsWrapper.selectAll("g.yLabel")
+      .data(boxes);
+
+    labels.exit().remove();
+
+    let newLabels = labels.enter()
+      .append<SVGGElement>('g')
+      .classed("yLabel", true);
+
+    this.ngZone.runOutsideAngular(() => {
+      newLabels.on('mouseover', function (d, i) {
+        d3.select(this)
+          .selectAll(".yLabel")
+          .style("visibility", "visible");
+      }).on('mouseout', function () {
+        d3.select(this)
+          .selectAll(".yLabel")
+          .style("visibility", "hidden");
+      });
+    });
+
+    newLabels.append<SVGGElement>("rect")
+      .attr("class", "yTrigger")
+      .style("fill-opacity", 1)
+    ;
+
+    newLabels.append<SVGGElement>("rect")
+      .attr("class", "yLabel")
+      .style("fill-opacity", 0.35)
+      .style("visibility", "hidden");
+
+    newLabels.append<SVGGElement>('text')
+      .attr("class", "yLabel")
+      .attr("text-anchor", "left")
+      .attr("dominant-baseline", "central")
+      .style("font-size", "10px")
+      .style("opacity", 1)
+      .attr('x', 5)
+      .style("visibility", "hidden");
+
+
+    let enterUpdate: Selection<SVGSVGElement, BoxDefinition, null, undefined> =
+      <Selection<SVGSVGElement, BoxDefinition, null, undefined>> newLabels.merge(<any>labels);
+
+
+    let bboxes: SVGRect[] = [];
+
+    enterUpdate.select<SVGSVGElement>("text")
+      .attr('y', d => this.graphicContext.yScale(d.key) + this.graphicContext.yScale.bandwidth() / 2)
+      .text(d => d.label)
+      .each(function (d) {
+        bboxes.push(this.getBBox());
+      });
+
+    let trigers = enterUpdate.select<SVGSVGElement>(".yTrigger")
+      .style("fill", d => d.color)
+      .style("stroke", d => d.color);
+
+
+    trigers.data(bboxes)
+      .attr("x", -7)
+      .attr("y", b => b.y - 2)
+      .attr("width", b => 7)
+      .attr("height", b => b.height + 4);
+
+    let frames = enterUpdate.select<SVGSVGElement>("rect.yLabel")
+      .style("fill", d => d.color)
+      .style("fill-opacity", 0.35);
+
+    frames.data(bboxes)
+      .attr("x", 0)
+      .attr("y", b => b.y - 2)
+      .attr("width", b => b.width + 10)
+      .attr("height", b => b.height + 4);
+
+    return graphicContext;
   }
 
   updatePallete(data: any[], graphicContext: GraphicContext): GraphicContext {
@@ -231,22 +320,34 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     graphicContext.tooltipWrapper = mainPane.append<SVGGElement>('g')
       .classed("tooltipWrapper", true);
 
+    graphicContext.tooltipBox = graphicContext.tooltipWrapper.append<SVGGElement>("rect")
+      .style("fill", "white")
+      .style("fill-opacity", 0.6)
+      .style("stroke", "grey")
+    //.style("visibility", "hidden");
+    ;
+
     graphicContext.tooltipText = graphicContext.tooltipWrapper.append<SVGGElement>("text")
       .attr("class", "tooltip")
       //.attr("text-anchor", "left")
       .attr("text-anchor", "middle")
       //.attr("alignment-baseline", "middle")
-      .attr("dy", "-0.35em")
+      //.attr("alignment-baseline", "baseline")
+      //.attr("dy", "-10px")
+      .style("opacity", 1)
     //.attr("dx", "0.35em")
     //.style("font-size", this.lookAndFeel.tooltipFontSize) //"11px")
     //.style("opacity", 0)
     ;
 
+    graphicContext.tooltipWrapper
+      .style("visibility", "hidden");
+
     return graphicContext;
   }
 
   showTooltip(v: number, x: any, y: any) {
-    //console.log("Show: " + v+";"+this.constructor.name);
+    //console.log("Show: " + v + ";" + this.constructor.name);
 
     if (!this.graphicContext.tooltipText) {
       return;
@@ -256,8 +357,21 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr('x', this.graphicContext.xScale(x))
       .attr('y', this.graphicContext.yScale(y))
       .text(SmartRounder.round(v))
-      //.transition().duration(this.lookAndFeel.baseTransitionsTime / 2)
-      .style('opacity', 1);
+    //.transition().duration(this.lookAndFeel.baseTransitionsTime / 2)
+    //.style('opacity', 1);
+    ;
+
+    let bbox = this.graphicContext.tooltipText.node().getBBox();
+
+    this.graphicContext.tooltipBox
+      .attr("x", bbox.x - 3)
+      .attr("y", bbox.y - 2)
+      .attr("width", bbox.width + 6)
+      .attr("height", bbox.height + 4);
+
+    this.graphicContext.tooltipWrapper
+      .style("visibility", "visible")
+    ;
 
   };
 
@@ -266,9 +380,15 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     if (!this.graphicContext.tooltipText) {
       return;
     }
-    this.graphicContext.tooltipText
+    ;
+
+    this.graphicContext.tooltipWrapper
+      .style("visibility", "hidden")
+    ;
+
+    //this.graphicContext.tooltipText
     //.transition().duration(this.lookAndFeel.baseTransitionsTime / 2)
-      .style("opacity", 0);
+    //.style("opacity", 0);
   }
 
   plotAxisBox(data: BoxDefinition[], domain: number[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
@@ -350,7 +470,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     if (!graphicContext.yLeftAxis) {
       graphicContext.yLeftAxis = d3.axisLeft(graphicContext.yScale)
-      //.tickFormat( () => "")
+        .tickFormat( () => "")
       ;
     }
 

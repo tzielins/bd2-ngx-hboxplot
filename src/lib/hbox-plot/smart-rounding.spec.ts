@@ -2,6 +2,13 @@ import {SmartRounder} from "./smart-rounding";
 
 describe('SmartRounding', () => {
 
+  it("leaves not numbers, unchanged", () => {
+    expect(SmartRounder.round(<any>"ala")).toBe("ala");
+
+    expect(SmartRounder.round(<any>"1")).toBe(1);
+    expect(SmartRounder.round(+".")).toBeNaN();
+  });
+
   it("leaves small numbers untouched", () => {
 
     let d = [0.0010002, -0.001345445, -0.00000034343];

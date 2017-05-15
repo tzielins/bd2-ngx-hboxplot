@@ -12,6 +12,10 @@ describe('BD2ColorPalette', () => {
     let p = BD2ColorPalette.pallete(3);
     expect(p.length).toBe(3);
     expect(p[2]).toBeDefined();
+
+    p = BD2ColorPalette.pallete(30);
+    expect(p.length).toBe(30);
+    expect(p[29]).toBeDefined();
   });
 
   it('extends empty pallete to black', () => {
@@ -58,6 +62,10 @@ describe('BD2ColorPalette', () => {
     let dp = BD2ColorPalette.dataPalette(67);
     expect(dp(0, 23)).toBeTruthy();
     expect(dp(0, 23)).toBe(dp(7, 23));
+
+    dp = BD2ColorPalette.dataPalette(6);
+    expect(dp(0, 5)).toBeTruthy();
+    expect(dp(0, 5)).toBe(dp(7, 5));
 
   });
 });

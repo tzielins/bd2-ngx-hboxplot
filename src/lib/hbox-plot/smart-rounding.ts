@@ -1,7 +1,10 @@
-
 export class SmartRounder {
 
   static round(value: number, base?: number): number {
+
+    if (isNaN(value)) {
+      return value;
+    }
 
     base = base || value;
     base = Math.abs(base);

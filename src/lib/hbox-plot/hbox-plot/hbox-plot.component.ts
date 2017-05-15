@@ -78,7 +78,7 @@ export class GraphicContext {
   selector: 'bd2-ngx-hbox-plot',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="hbox-plot" style="border: 1px solid red;"></div>
+    <div class="hbox-plot"></div>
   `,
   styles: [
       `
@@ -263,7 +263,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     });
   }
 
-  prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext): GraphicContext {
+  prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>,
+                graphicContext: GraphicContext): GraphicContext {
 
     if (!graphicContext.labelsWrapper) {
       graphicContext.labelsWrapper = mainPane.append<SVGGElement>('g')

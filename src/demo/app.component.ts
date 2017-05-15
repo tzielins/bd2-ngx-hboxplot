@@ -12,16 +12,18 @@ export class AppComponent {
 
   testData: number[][];
 
+  labels: string[];
+
   private ci = 0;
 
   constructor() {
     this.testData = [
       [20, 21, 23, 24, 25],
-      [18, 18.5, 25.5, 25, 26, 25, 25.8, 26, 25.1, 26.3],
+      [18, 18.5, 25.5, 25, 26, 22.8, 25.8, 26, 25.1, 26.8],
       [30],
       [20, 20.5, 20.6],
       [28, 29.7, 28.5],
-      [21.5, 29.7, 30.4, 24, 24.1, 24.9, 30, 24.7, 23.7, 24.3, 23.4, 24.5, 23.3, 23.7, 23.9, 23.5]
+      [21.5, 29.7, 30.4, 24, 24.1, 25.9, 30, 24.7, 23.7, 24.3, 23.4, 24.5, 22.5, 23.7, 23.9, 23.5]
     ];
 
     let nr = Math.random() * 15 + 1;
@@ -51,15 +53,30 @@ export class AppComponent {
 
       row = row.map(v => v + base);
       /*if (ix === 1) {
-        if (Math.random() < 0.5) {
-          row[0] = row[row.length - 1];
-        }
-      }*/
+       if (Math.random() < 0.5) {
+       row[0] = row[row.length - 1];
+       }
+       }*/
       d.push(row);
 
     }
+
+    let LET = "ABCDEFGHIJKLMN ";
+    let labels = d.map((v, ix) => {
+
+      let s = Math.random() * 12 + 1;
+      let label = (ix + 1) + '. ';
+      for (let i = 0; i < s; i++) {
+        label += LET[Math.round(Math.random() * (LET.length - 1))];
+      }
+
+      return label;
+    });
+
     this.data = d;
+    this.labels = labels;
   }
+
 
   detection() {
     console.log("Changed detection " + this.ci);

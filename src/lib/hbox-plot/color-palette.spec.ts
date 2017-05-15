@@ -8,11 +8,32 @@ describe('BD2ColorPalette', () => {
     expect(ps(8)).not.toEqual(pm(8));
   });
 
-  it('gives pallet array',()=> {
+  it('gives pallet array', () => {
     let p = BD2ColorPalette.pallete(3);
     expect(p.length).toBe(3);
     expect(p[2]).toBeDefined();
-  })
+  });
+
+  it('extends empty pallete to black', () => {
+    let p: string[] = [];
+    expect(BD2ColorPalette.extendPallete(p, 2)).toEqual(['black', 'black']);
+
+    p = null;
+    expect(BD2ColorPalette.extendPallete(p, 2)).toEqual(['black', 'black']);
+  });
+
+  it('extends given pallete', () => {
+    let p: string[] = ['red', 'blue'];
+
+    let ans = BD2ColorPalette.extendPallete(p, 2);
+    expect(ans).toEqual(['red', 'blue']);
+
+    ans = BD2ColorPalette.extendPallete(p, 3);
+    expect(ans).toEqual(['red', 'blue', 'red']);
+
+    ans = BD2ColorPalette.extendPallete(p, 4);
+    expect(ans).toEqual(['red', 'blue', 'red', 'blue']);
+  });
 
   it('palettes can handle big sizes', () => {
 

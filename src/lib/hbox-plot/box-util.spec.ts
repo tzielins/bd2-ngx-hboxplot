@@ -90,6 +90,30 @@ describe('BoxUtil', () => {
 
     });
 
+    it('calculates whiskers details', () => {
+
+      let data = [1, 3, 4, 5, 5, 5, 6, 7, 8];
+      let box = util.datumToBox(data);
+
+      expect(box).toBeTruthy();
+      expect(box.median).toBe(5);
+      expect(box.fstQnt).toBe(4);
+      expect(box.thrdQnt).toBe(6);
+      expect(box.lowWskr).toBe(1);
+      expect(box.highWskr).toBe(8);
+
+      data = [0, 3, 4, 5, 5, 5, 6, 7, 9.1];
+      box = util.datumToBox(data);
+
+      expect(box).toBeTruthy();
+      expect(box.median).toBe(5);
+      expect(box.fstQnt).toBe(4);
+      expect(box.thrdQnt).toBe(6);
+      expect(box.lowWskr).toBe(3);
+      expect(box.highWskr).toBe(7);
+
+
+    });
 
     it('calculates outliers', () => {
       let data = [8.1, -0.1, 5, 3, 4];

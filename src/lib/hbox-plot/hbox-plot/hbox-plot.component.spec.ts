@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {HBoxPlotComponent, defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.component';
 import {D3, d3, Selection} from "../../d3service";
@@ -46,18 +46,62 @@ describe('HBoxPlotComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('colorBoxes adds colors from the pallete', () => {
 
-    graphicContext.pallete = BD2ColorPalette.pallete(5);
-    let boxes: BoxDefinition[] = [];
-    boxes.push(new BoxDefinition());
-    boxes.push(new BoxDefinition());
-    boxes[0].ix = 0;
-    boxes[1].ix = 3;
+  describe("coloring", () => {
 
-    component.colorBoxes(boxes, graphicContext);
-    expect(boxes[0].color).toBe(graphicContext.pallete[0]);
-    expect(boxes[1].color).toBe(graphicContext.pallete[3]);
+    it('colorBoxes adds colors from the pallete', () => {
+
+      graphicContext.pallete = BD2ColorPalette.pallete(5);
+      let boxes: BoxDefinition[] = [];
+      boxes.push(new BoxDefinition());
+      boxes.push(new BoxDefinition());
+      boxes[0].ix = 0;
+      boxes[1].ix = 3;
+
+      component.colorBoxes(boxes, graphicContext.pallete);
+      expect(boxes[0].color).toBe(graphicContext.pallete[0]);
+      expect(boxes[1].color).toBe(graphicContext.pallete[3]);
+
+    });
+
+    it('updatePallete uses provided colro pallete', () => {
+      let pallete = ['red', 'green', 'blue'];
+      let data = [[1], [2], [3], [4]];
+
+      let ans = component.updatePallete(data, pallete, graphicContext);
+      expect(ans.pallete).toEqual(['red', 'green', 'blue', 'red']);
+    });
+
+    it('updatePallete can create default pallete', () => {
+      let pallete = [];
+      let data = [[1], [2]];
+
+      let ans = component.updatePallete(data, pallete, graphicContext);
+      expect(ans.pallete.length).toEqual(2);
+      expect(ans.pallete[1]).toBeTruthy();
+      expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
+
+      pallete = null;
+      ans = component.updatePallete(data, pallete, graphicContext);
+      expect(ans.pallete.length).toEqual(2);
+      expect(ans.pallete[1]).toBeTruthy();
+      expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
+    });
+
+    it('updatePallete emits colors used', fakeAsync(() => {
+
+      let pallete = [];
+      let data = [[1], [2]];
+
+      let colors;
+      component.colors.subscribe(a => colors = a, (e) => fail(e));
+
+      let ans = component.updatePallete(data, pallete, graphicContext);
+      tick();
+
+      expect(colors).toBeTruthy();
+      expect(colors).toEqual(ans.pallete);
+    }));
 
   });
 

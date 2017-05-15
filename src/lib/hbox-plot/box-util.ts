@@ -8,18 +8,11 @@ export class BoxUtil {
       return [];
     }
 
-    let LET = "ABCDEFGHIJKLMN ";
 
     return data.map((v, ix) => {
       let b = this.datumToBox(v);
       b.ix = ix;
       b.key = (ix + 1) + '.';
-      let s = Math.random() * 12 + 1;
-
-      b.label = b.key;
-      for (let i = 0; i < s; i++) {
-        b.label += LET[Math.round(Math.random() * (LET.length - 1))];
-      }
       return b;
     });
   }
@@ -40,6 +33,21 @@ export class BoxUtil {
     let iqr = 1.5 * (box.thrdQnt - box.fstQnt);
     box.lowWskr = box.fstQnt - iqr;
     box.highWskr = box.thrdQnt + iqr;
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] >= box.lowWskr) {
+        box.lowWskr = data[i];
+        break;
+      }
+    }
+
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (data[i] <= box.highWskr) {
+        box.highWskr = data[i];
+        break;
+      }
+    }
+
 
     box.outliers = data.filter(v => (v < box.lowWskr || v > box.highWskr));
     return box;

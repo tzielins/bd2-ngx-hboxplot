@@ -1,6 +1,6 @@
 import {
   Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy, NgZone, ChangeDetectorRef,
-  ElementRef, SimpleChanges, ChangeDetectionStrategy
+  ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
 import {D3, d3, Selection, ScaleLinear} from "../../d3service";
 import {Axis} from "d3-axis";
@@ -21,6 +21,8 @@ export interface LookAndFeel {
   boxFillOpacity: number;
   meanStrokeWidth: string;
 
+  whiskerStrokeWidth: string;
+
   outliersStrokeWidth: string;
   outliersCircleRadius: number;
   outliersFillOpacity: number;
@@ -36,6 +38,8 @@ export let defualtLookAndFeel: () => LookAndFeel = function () {
     boxStrokeWidth: '2px',
     boxFillOpacity: 0.35,
     meanStrokeWidth: '4px',
+
+    whiskerStrokeWidth: '1px',
 
     outliersStrokeWidth: '1px',
     outliersCircleRadius: 3,
@@ -104,6 +108,15 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   domain: number[] = [17, 36];
 
+  @Input()
+  pallete: string[];
+
+  @Input()
+  labels: string[];
+
+  @Output()
+  colors = new EventEmitter<string[]>();
+
   private d3: D3;
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -170,14 +183,26 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.graphicContext = this.plotAxisBox(boxes, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
 
-    this.graphicContext = this.updatePallete(this.data, this.graphicContext);
-    this.colorBoxes(boxes, this.graphicContext);
+    this.graphicContext = this.updatePallete(this.data, this.pallete, this.graphicContext);
+    this.colorBoxes(boxes, this.graphicContext.pallete);
+    this.labelBoxes(boxes, this.labels);
 
     this.graphicContext = this.plotDataBoxes(boxes, this.lookAndFeel, this.mainPane, this.graphicContext);
 
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
 
     this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.graphicContext);
+  }
+
+  labelBoxes(boxes: BoxDefinition[], labels: string[]) {
+    if (!labels) {
+      labels = [];
+    }
+    ;
+
+    boxes.forEach((b, ix) => {
+      b.label = labels[ix] ? labels[ix] : "" + (ix + 1);
+    });
   }
 
   prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext): GraphicContext {
@@ -265,16 +290,21 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     return graphicContext;
   }
 
-  updatePallete(data: any[], graphicContext: GraphicContext): GraphicContext {
+  updatePallete(data: any[], pallete: string[], graphicContext: GraphicContext): GraphicContext {
 
-    graphicContext.pallete = BD2ColorPalette.pallete(data.length);
-    //graphicContext.dataPallete = (d, i) => graphicContext.pallete[i % graphicContext.pallete.length];
+    if (!pallete || pallete.length === 0) {
+      graphicContext.pallete = BD2ColorPalette.pallete(data.length);
+    } else {
+      graphicContext.pallete = BD2ColorPalette.extendPallete(pallete, data.length);
+
+    }
+    this.colors.next(graphicContext.pallete.slice());
 
     return graphicContext;
   }
 
-  colorBoxes(boxes: BoxDefinition[], graphicContext: GraphicContext) {
-    boxes.forEach(b => b.color = graphicContext.pallete[b.ix]);
+  colorBoxes(boxes: BoxDefinition[], pallete: string[]) {
+    boxes.forEach(b => b.color = pallete[b.ix]);
   }
 
 
@@ -470,7 +500,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     if (!graphicContext.yLeftAxis) {
       graphicContext.yLeftAxis = d3.axisLeft(graphicContext.yScale)
-        .tickFormat( () => "")
+        .tickFormat(() => "")
       ;
     }
 
@@ -523,6 +553,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   updateBoxWidgets(boxWidgets: Selection<SVGGElement, BoxDefinition, null, undefined>,
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
+
+    this.updateWhiskers(<any> boxWidgets.select("g.whiskers"), graphicContext);
 
     boxWidgets.select("rect")
       .call(this.positionBoxRectangle, graphicContext);
@@ -580,7 +612,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("y1", (d, i) => graphicContext.yScale(d.key))
       .attr("x2", (d, i) => graphicContext.xScale(d.mean))
       .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth())
-      .style("stroke", d => d.color)
+      .style("stroke", d => d.color);
   }
 
   positionOutlier(elm: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext) {
@@ -591,6 +623,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .style("fill", d => d[2]);
 
   }
+
 
   createOutlier(elm: Selection<SVGGElement, any, null, undefined>, lookAndFeel: LookAndFeel, graphicContext: GraphicContext,
                 positionOutlierFunction: (elm: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext) => {}) {
@@ -607,11 +640,91 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
+  positionWhiskerLine(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, left: boolean, graphicContext: GraphicContext) {
+
+    elm.attr("x1", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.thrdQnt))
+      .attr("y1", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
+      .attr("x2", (d, i) => left ? graphicContext.xScale(d.fstQnt) : graphicContext.xScale(d.highWskr))
+      .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
+      .style("stroke", d => d.color)
+      .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
+
+    ;
+
+  }
+
+  positionWhiskerTip(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, left: boolean, graphicContext: GraphicContext) {
+
+    elm.attr("x1", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.highWskr))
+      .attr("y1", (d, i) => graphicContext.yScale(d.key))
+      .attr("x2", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.highWskr))
+      .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth())
+      .style("stroke", d => d.color)
+      .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
+
+    ;
+
+  }
+
+  updateWhiskers(whiskers: Selection<SVGGElement, BoxDefinition, null, undefined>,
+                 graphicContext: GraphicContext) {
+
+    whiskers.select("line.whiskerlineL")
+      .call(this.positionWhiskerLine, true, graphicContext);
+
+    whiskers.select("line.whiskerlineR")
+      .call(this.positionWhiskerLine, false, graphicContext);
+
+    whiskers.select("line.whiskertipL")
+      .call(this.positionWhiskerTip, true, graphicContext);
+
+    whiskers.select("line.whiskertipR")
+      .call(this.positionWhiskerTip, false, graphicContext);
+
+  }
+
+  createWhiskers(whiskers: Selection<SVGGElement, BoxDefinition, null, undefined>,
+                 lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
+
+
+    let lwhiskr = whiskers.append("line")
+      .attr("class", "whiskerlineL")
+      .style("stroke-width", lookAndFeel.whiskerStrokeWidth)
+      .style("stroke-dasharray", "4 3")
+      .call(this.positionWhiskerLine, true, graphicContext)
+    ;
+    let rwhiskr = whiskers.append("line")
+      .attr("class", "whiskerlineR")
+      .style("stroke-width", lookAndFeel.whiskerStrokeWidth)
+      .style("stroke-dasharray", "4 3")
+      .call(this.positionWhiskerLine, false, graphicContext)
+    ;
+
+    let lTip = whiskers.append("line")
+      .attr("class", "whiskertipL")
+      .style("stroke-width", lookAndFeel.whiskerStrokeWidth)
+      .call(this.positionWhiskerTip, true, graphicContext)
+    ;
+
+    let rTip = whiskers.append("line")
+      .attr("class", "whiskertipR")
+      .style("stroke-width", lookAndFeel.whiskerStrokeWidth)
+      .call(this.positionWhiskerTip, false, graphicContext)
+    ;
+
+
+  }
 
   createBoxWidgets(newBoxWidgets: Selection<SVGGElement, BoxDefinition, null, undefined>,
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
 
     let instance = this;
+
+    let whiskers = newBoxWidgets.append<SVGGElement>("g").attr("class", "whiskers");
+
+    this.createWhiskers(whiskers, lookAndFeel, graphicContext);
+
+
     let rect = newBoxWidgets.append("rect")
       .attr("class", "box")
       .style("stroke-width", lookAndFeel.boxStrokeWidth)

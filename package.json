@@ -1,7 +1,9 @@
 {
   "name": "bd2-ngx-hboxplot",
-  "version": "0.0.0",
+  "version": "0.9.0",
   "license": "MIT",
+  "main": "src/lib/index.ts",
+  "typings": "src/lib/index.ts",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

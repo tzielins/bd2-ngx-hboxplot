@@ -16,10 +16,14 @@ export interface LookAndFeel {
   hMarginL: number;
   hMarginR: number;
   rowWidth: number;
+  rowGap: number;
 
   boxStrokeWidth: string;
   boxFillOpacity: number;
   meanStrokeWidth: string;
+
+  labelFont: string;
+  labelFillOpacity: number;
 
   whiskerStrokeWidth: string;
 
@@ -33,11 +37,15 @@ export let defualtLookAndFeel: () => LookAndFeel = function () {
     vMargin: 25,
     hMarginL: 20,
     hMarginR: 15,
-    rowWidth: 30,
+    rowWidth: 40,
+    rowGap: 0.3,
 
     boxStrokeWidth: '2px',
     boxFillOpacity: 0.35,
     meanStrokeWidth: '4px',
+
+    labelFont: '12px',
+    labelFillOpacity: 0.35,
 
     whiskerStrokeWidth: '1px',
 
@@ -78,7 +86,7 @@ export class GraphicContext {
   selector: 'bd2-ngx-hbox-plot',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="hbox-plot"></div>
+    <div class="hbox-plot" [hidden]="isHidden"></div>
   `,
   styles: [
       `
@@ -97,6 +105,16 @@ export class GraphicContext {
   ]
 })
 export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+
+  /**
+   * Necessary to control hiding of the element, otherwise the BBoxes are not defined and labels
+   * were not rendered in correct places.
+   * @type {boolean}
+   */
+  @Input()
+  hidden = false;
+
+  isHidden = false;
 
   @Input()
   data: number[][];
@@ -141,6 +159,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    */
   ngOnChanges(changes: SimpleChanges) {
 
+    this.isHidden = this.hidden;
+
     if (!this.data) {
       return;
     }
@@ -180,11 +200,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   updatePlot() {
 
+
     let boxes = this.boxUtil.dataToBoxes(this.data);
 
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
 
-    this.graphicContext = this.prepareScales(boxes, this.domain, this.graphicContext);
+    this.graphicContext = this.prepareScales(boxes, this.domain, this.lookAndFeel, this.graphicContext);
 
     this.graphicContext = this.plotAxisBox(boxes, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
 
@@ -196,7 +217,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
 
-    this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.graphicContext);
+    this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.lookAndFeel, this.graphicContext);
   }
 
 
@@ -263,7 +284,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     });
   }
 
-  prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>,
+  prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>, lookAndFeel: LookAndFeel,
                 graphicContext: GraphicContext): GraphicContext {
 
     if (!graphicContext.labelsWrapper) {
@@ -306,7 +327,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("class", "yLabel")
       .attr("text-anchor", "left")
       .attr("dominant-baseline", "central")
-      .style("font-size", "10px")
+      .style("font-size", lookAndFeel.labelFont)
       .style("opacity", 1)
       .attr('x', 5)
       .style("visibility", "hidden");
@@ -332,19 +353,19 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     trigers.data(bboxes)
       .attr("x", -7)
-      .attr("y", b => b.y - 2)
+      .attr("y", b => b.y - 3)
       .attr("width", b => 7)
-      .attr("height", b => b.height + 4);
+      .attr("height", b => b.height + 6);
 
     let frames = enterUpdate.select<SVGSVGElement>("rect.yLabel")
       .style("fill", d => d.color)
-      .style("fill-opacity", 0.35);
+      .style("fill-opacity", lookAndFeel.labelFillOpacity);
 
     frames.data(bboxes)
       .attr("x", 0)
-      .attr("y", b => b.y - 2)
+      .attr("y", b => b.y - 3)
       .attr("width", b => b.width + 10)
-      .attr("height", b => b.height + 4);
+      .attr("height", b => b.height + 7);
 
     return graphicContext;
   }
@@ -430,7 +451,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     //.style("opacity", 0);
   }
 
-  prepareScales(data: BoxDefinition[], domain: number[],
+  prepareScales(data: BoxDefinition[], domain: number[], lookAndFeel: LookAndFeel,
                 graphicContext: GraphicContext): GraphicContext {
 
     if (!graphicContext.xScale) {
@@ -444,7 +465,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     if (!graphicContext.yScale) {
       graphicContext.yScale = d3.scaleBand()
-        .padding(0.2)
+        .padding(lookAndFeel.rowGap)
       ;
     }
 

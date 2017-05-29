@@ -147,10 +147,10 @@ describe('HBoxPlotComponent', () => {
       boxes[1].color = "red";
 
       graphicContext = component.preparePane(boxes, lookAndFeel, graphicContext);
-      graphicContext = component.prepareScales(boxes, [12, 24], graphicContext);
+      graphicContext = component.prepareScales(boxes, [12, 24], lookAndFeel, graphicContext);
       let mainPane = getMains(fixture)[1];
 
-      graphicContext = component.prepareLabels(boxes, mainPane, graphicContext);
+      graphicContext = component.prepareLabels(boxes, mainPane, lookAndFeel, graphicContext);
 
       expect(graphicContext.labelsWrapper).toBeTruthy();
 
@@ -232,7 +232,7 @@ describe('HBoxPlotComponent', () => {
       graphicContext.workspaceHeight = 100;
       graphicContext.workspaceWidth = 100;
 
-      graphicContext = component.prepareScales(boxes, [12, 24], graphicContext);
+      graphicContext = component.prepareScales(boxes, [12, 24], lookAndFeel, graphicContext);
       expect(graphicContext).toBeDefined();
       expect(graphicContext.xScale).toBeDefined();
       expect(graphicContext.xScale.domain()).toEqual([12, 24]);
@@ -287,7 +287,7 @@ describe('HBoxPlotComponent', () => {
 
       data = boxUtil.dataToBoxes(d);
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
-      graphicContext = component.prepareScales(data, [12, 24], graphicContext);
+      graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
       mainPane = getMains(fixture)[1];
     });
 
@@ -349,7 +349,7 @@ describe('HBoxPlotComponent', () => {
       data[0].outliers = [15, 15.5, 16];
 
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
-      graphicContext = component.prepareScales(data, [12, 24], graphicContext);
+      graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
       mainPane = getMains(fixture)[1];
       component.testGraphicContext(graphicContext);
     });
@@ -465,7 +465,7 @@ describe('HBoxPlotComponent', () => {
 
       data = boxUtil.dataToBoxes(d);
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
-      graphicContext = component.prepareScales(data, [12, 24], graphicContext);
+      graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
 
       mainPane = getMains(fixture)[1];
       graphicContext.axisWrapper = component.initAxisWrapper(mainPane);

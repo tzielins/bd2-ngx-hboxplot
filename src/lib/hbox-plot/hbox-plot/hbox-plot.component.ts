@@ -86,7 +86,7 @@ export class GraphicContext {
   selector: 'bd2-ngx-hbox-plot',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="hbox-plot" [hidden]="isHidden"></div>
+    <div class="hbox-plot"></div>
   `,
   styles: [
       `
@@ -114,7 +114,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   hidden = false;
 
-  isHidden = false;
+  //isHidden = false;
 
   @Input()
   data: number[][];
@@ -134,6 +134,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   private d3: D3;
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
+  private removed: Selection<SVGSVGElement, any, null, undefined>;
+
   private mainPane: Selection<SVGGElement, any, null, undefined>;
 
   private lookAndFeel = defualtLookAndFeel();
@@ -151,6 +153,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    */
   ngAfterViewInit() {
     this.changeDetectorRef.detach();
+    console.log("AFI");
   }
 
   /**
@@ -159,25 +162,39 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    */
   ngOnChanges(changes: SimpleChanges) {
 
-    this.isHidden = this.hidden;
+    //console.log("Changes", changes);
+
+    this.initSVG();
+
+    this.handleHiding();
 
     if (!this.data) {
       return;
     }
 
-
-    console.log("Changes", changes);
-
-    this.updatePlot();
+    if (!this.hidden) {
+      this.updatePlot();
+    }
   }
 
+  isDataUpdate(changes: any): boolean {
+
+    return (changes.data || changes.domain || changes.palette || changes.labels );
+  }
+
+  initSVG() {
+    if (!this.d3Svg) {
+      let d3ParentElement = this.d3.select(this.parentNativeElement);
+      this.d3Svg = d3ParentElement.select('.hbox-plot').append<SVGSVGElement>('svg');
+      this.d3Svg.attr('width', '0');
+    }
+  }
 
   ngOnInit() {
 
     if (this.parentNativeElement !== null) {
 
-      //this.graphicContext.showTooltip = this.showTooltip;
-      //this.graphicContext.hideTooltip = this.hideTooltip;
+
     } else {
       console.error('Missing parrent element for the component');
     }
@@ -197,6 +214,18 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = context;
   }
 
+  handleHiding() {
+    if (this.hidden) {
+      this.removed = this.d3Svg.remove();
+    } else {
+      if (this.removed) {
+        this.d3.select(this.parentNativeElement)
+          .append(() => this.d3Svg.node());
+        this.removed = undefined;
+      }
+    }
+
+  }
 
   updatePlot() {
 
@@ -218,6 +247,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
 
     this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.lookAndFeel, this.graphicContext);
+
   }
 
 
@@ -243,9 +273,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     //console.log("PP",data);
 
-    if (!this.d3Svg) {
-      let d3ParentElement = this.d3.select(this.parentNativeElement);
-      this.d3Svg = d3ParentElement.select('.hbox-plot').append<SVGSVGElement>('svg');
+    if (!this.mainPane) {
+      //let d3ParentElement = this.d3.select(this.parentNativeElement);
+      //this.d3Svg = d3ParentElement.select('.hbox-plot').append<SVGSVGElement>('svg');
       this.d3Svg.attr('width', '100%');
 
       this.mainPane = this.d3Svg.append<SVGGElement>('g');
@@ -344,6 +374,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .text(d => d.label)
       .each(function (d) {
         bboxes.push(this.getBBox());
+        //console.log("D: " + d.label, this.getBBox());
       });
 
     let trigers = enterUpdate.select<SVGSVGElement>(".yTrigger")

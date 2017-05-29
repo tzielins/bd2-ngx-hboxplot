@@ -12,6 +12,8 @@ export class AppComponent {
 
   testData: number[][];
 
+  isHidden = true;
+
   labels: string[];
 
   private ci = 0;
@@ -35,6 +37,10 @@ export class AppComponent {
 
     //this.generateData();
     this.generateData();
+  }
+
+  toggleHidden() {
+    this.isHidden = !this.isHidden;
   }
 
   generateData() {

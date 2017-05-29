@@ -12,7 +12,7 @@
     <div class="col-sm-9">
 
       <bd2-ngx-hbox-plot
-        [data]="data" [labels]="labels"
+        [data]="data" [labels]="labels" [hidden]="isHidden"
       >
       </bd2-ngx-hbox-plot>
       {{detection()}}
@@ -22,6 +22,7 @@
         <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
       </div>
       <div class="form-group">
+        <label (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label>
         <label>Data:</label>
         <ul class="list-unstyled" style="margin: 1em;">
           <li *ngFor="let row of data">[{{row}}],</li>

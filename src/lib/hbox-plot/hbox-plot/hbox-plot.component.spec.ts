@@ -146,6 +146,7 @@ describe('HBoxPlotComponent', () => {
       boxes[0].color = "black";
       boxes[1].color = "red";
 
+      component.initSVG();
       graphicContext = component.preparePane(boxes, lookAndFeel, graphicContext);
       graphicContext = component.prepareScales(boxes, [12, 24], lookAndFeel, graphicContext);
       let mainPane = getMains(fixture)[1];
@@ -186,6 +187,7 @@ describe('HBoxPlotComponent', () => {
       let svg = fixture.nativeElement.querySelector('.hbox-plot svg');
       expect(svg).toBeFalsy();
 
+      component.initSVG();
       component.preparePane(data, lookAndFeel, graphicContext);
 
       let mains = getMains(fixture);
@@ -198,6 +200,7 @@ describe('HBoxPlotComponent', () => {
     it("changes height depending on data", () => {
 
       let data = [1];
+      component.initSVG();
       component.preparePane(data, lookAndFeel, graphicContext);
 
       let svg = getMains(fixture)[0];
@@ -219,6 +222,7 @@ describe('HBoxPlotComponent', () => {
 
       let data = [1];
 
+      component.initSVG();
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
 
       expect(graphicContext.workspaceHeight).toBeGreaterThan(10);
@@ -247,6 +251,7 @@ describe('HBoxPlotComponent', () => {
 
       let data = [1];
 
+      component.initSVG();
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       let mainPane = getMains(fixture)[1];
 
@@ -263,6 +268,7 @@ describe('HBoxPlotComponent', () => {
 
       let data = [1];
 
+      component.initSVG();
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       let mainPane = getMains(fixture)[1];
 
@@ -286,6 +292,7 @@ describe('HBoxPlotComponent', () => {
       let d = [[1]];
 
       data = boxUtil.dataToBoxes(d);
+      component.initSVG();
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
       mainPane = getMains(fixture)[1];
@@ -348,6 +355,7 @@ describe('HBoxPlotComponent', () => {
       data[0].highWskr = 22;
       data[0].outliers = [15, 15.5, 16];
 
+      component.initSVG();
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
       mainPane = getMains(fixture)[1];
@@ -464,6 +472,8 @@ describe('HBoxPlotComponent', () => {
       let d = [[1]];
 
       data = boxUtil.dataToBoxes(d);
+      component.initSVG();
+
       graphicContext = component.preparePane(data, lookAndFeel, graphicContext);
       graphicContext = component.prepareScales(data, [12, 24], lookAndFeel, graphicContext);
 

@@ -105,10 +105,10 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   domain: number[] = [17, 36];
 
   @Input()
-  pallete: string[];
+  palette: string[] = [];
 
   @Input()
-  labels: string[];
+  labels: string[] = [];
 
   @Output()
   colors = new EventEmitter<string[]>();
@@ -146,7 +146,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
 
 
-    //console.log("Changes", changes);
+    console.log("Changes", changes);
 
     this.updatePlot();
   }
@@ -188,7 +188,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.graphicContext = this.plotAxisBox(boxes, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
 
-    this.graphicContext = this.updatePallete(this.data, this.pallete, this.graphicContext);
+    this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
     this.colorBoxes(boxes, this.graphicContext.pallete);
     this.labelBoxes(boxes, this.labels);
 
@@ -200,12 +200,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
 
-  updatePallete(data: any[], pallete: string[], graphicContext: GraphicContext): GraphicContext {
+  updatePalette(data: any[], palette: string[], graphicContext: GraphicContext): GraphicContext {
 
-    if (!pallete || pallete.length === 0) {
-      graphicContext.pallete = BD2ColorPalette.pallete(data.length);
+    if (!palette || palette.length === 0) {
+      graphicContext.pallete = BD2ColorPalette.palette(data.length);
     } else {
-      graphicContext.pallete = BD2ColorPalette.extendPallete(pallete, data.length);
+      graphicContext.pallete = BD2ColorPalette.extendPalette(palette, data.length);
 
     }
     this.colors.next(graphicContext.pallete.slice());
@@ -213,8 +213,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     return graphicContext;
   }
 
-  colorBoxes(boxes: BoxDefinition[], pallete: string[]) {
-    boxes.forEach(b => b.color = pallete[b.ix]);
+  colorBoxes(boxes: BoxDefinition[], palette: string[]) {
+    boxes.forEach(b => b.color = palette[b.ix]);
   }
 
 

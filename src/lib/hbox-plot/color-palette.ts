@@ -8,26 +8,26 @@ export class BD2ColorPalette {
   private static mediumDataPalette = (d, i) => d3.schemeCategory20[i % d3.schemeCategory20.length];
   private static mediumIndexPalette = (i) => d3.schemeCategory20[i % d3.schemeCategory20.length];
 
-  static extendPallete(pallete: string[], size: number): string[] {
+  static extendPalette(palette: string[], size: number): string[] {
 
-    if (!pallete || pallete.length === 0) {
-      pallete = ['black'];
+    if (!palette || palette.length === 0) {
+      palette = ['black'];
     }
 
     let out = [];
     for (let i = 0; i < size; i++) {
-      out.push(pallete[i % pallete.length]);
+      out.push(palette[i % palette.length]);
     }
     return out;
 
   }
 
-  static pallete(size: number): string[] {
+  static palette(size: number): string[] {
 
     if (size <= d3.schemeCategory10.length) {
-      return BD2ColorPalette.extendPallete(d3.schemeCategory10, size);
+      return BD2ColorPalette.extendPalette(d3.schemeCategory10, size);
     } else {
-      return BD2ColorPalette.extendPallete(d3.schemeCategory20, size);
+      return BD2ColorPalette.extendPalette(d3.schemeCategory20, size);
     }
 
   }

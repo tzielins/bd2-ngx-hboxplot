@@ -50,9 +50,9 @@ describe('HBoxPlotComponent', () => {
 
   describe("coloring", () => {
 
-    it('colorBoxes adds colors from the pallete', () => {
+    it('colorBoxes adds colors from the palette', () => {
 
-      graphicContext.pallete = BD2ColorPalette.pallete(5);
+      graphicContext.pallete = BD2ColorPalette.palette(5);
       let boxes: BoxDefinition[] = [];
       boxes.push(new BoxDefinition());
       boxes.push(new BoxDefinition());
@@ -65,31 +65,31 @@ describe('HBoxPlotComponent', () => {
 
     });
 
-    it('updatePallete uses provided colro pallete', () => {
+    it('updatePalette uses provided colro palette', () => {
       let pallete = ['red', 'green', 'blue'];
       let data = [[1], [2], [3], [4]];
 
-      let ans = component.updatePallete(data, pallete, graphicContext);
+      let ans = component.updatePalette(data, pallete, graphicContext);
       expect(ans.pallete).toEqual(['red', 'green', 'blue', 'red']);
     });
 
-    it('updatePallete can create default pallete', () => {
+    it('updatePalette can create default palette', () => {
       let pallete = [];
       let data = [[1], [2]];
 
-      let ans = component.updatePallete(data, pallete, graphicContext);
+      let ans = component.updatePalette(data, pallete, graphicContext);
       expect(ans.pallete.length).toEqual(2);
       expect(ans.pallete[1]).toBeTruthy();
       expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
 
       pallete = null;
-      ans = component.updatePallete(data, pallete, graphicContext);
+      ans = component.updatePalette(data, pallete, graphicContext);
       expect(ans.pallete.length).toEqual(2);
       expect(ans.pallete[1]).toBeTruthy();
       expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
     });
 
-    it('updatePallete emits colors used', fakeAsync(() => {
+    it('updatePalette emits colors used', fakeAsync(() => {
 
       let pallete = [];
       let data = [[1], [2]];
@@ -97,7 +97,7 @@ describe('HBoxPlotComponent', () => {
       let colors;
       component.colors.subscribe(a => colors = a, (e) => fail(e));
 
-      let ans = component.updatePallete(data, pallete, graphicContext);
+      let ans = component.updatePalette(data, pallete, graphicContext);
       tick();
 
       expect(colors).toBeTruthy();

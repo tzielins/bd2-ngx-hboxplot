@@ -52,16 +52,16 @@ describe('HBoxPlotComponent', () => {
 
     it('colorBoxes adds colors from the palette', () => {
 
-      graphicContext.pallete = BD2ColorPalette.palette(5);
+      graphicContext.palette = BD2ColorPalette.palette(5);
       let boxes: BoxDefinition[] = [];
       boxes.push(new BoxDefinition());
       boxes.push(new BoxDefinition());
       boxes[0].ix = 0;
       boxes[1].ix = 3;
 
-      component.colorBoxes(boxes, graphicContext.pallete);
-      expect(boxes[0].color).toBe(graphicContext.pallete[0]);
-      expect(boxes[1].color).toBe(graphicContext.pallete[3]);
+      component.colorBoxes(boxes, graphicContext.palette);
+      expect(boxes[0].color).toBe(graphicContext.palette[0]);
+      expect(boxes[1].color).toBe(graphicContext.palette[3]);
 
     });
 
@@ -70,7 +70,7 @@ describe('HBoxPlotComponent', () => {
       let data = [[1], [2], [3], [4]];
 
       let ans = component.updatePalette(data, pallete, graphicContext);
-      expect(ans.pallete).toEqual(['red', 'green', 'blue', 'red']);
+      expect(ans.palette).toEqual(['red', 'green', 'blue', 'red']);
     });
 
     it('updatePalette can create default palette', () => {
@@ -78,15 +78,15 @@ describe('HBoxPlotComponent', () => {
       let data = [[1], [2]];
 
       let ans = component.updatePalette(data, pallete, graphicContext);
-      expect(ans.pallete.length).toEqual(2);
-      expect(ans.pallete[1]).toBeTruthy();
-      expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
+      expect(ans.palette.length).toEqual(2);
+      expect(ans.palette[1]).toBeTruthy();
+      expect(ans.palette[1]).not.toEqual(ans.palette[0]);
 
       pallete = null;
       ans = component.updatePalette(data, pallete, graphicContext);
-      expect(ans.pallete.length).toEqual(2);
-      expect(ans.pallete[1]).toBeTruthy();
-      expect(ans.pallete[1]).not.toEqual(ans.pallete[0]);
+      expect(ans.palette.length).toEqual(2);
+      expect(ans.palette[1]).toBeTruthy();
+      expect(ans.palette[1]).not.toEqual(ans.palette[0]);
     });
 
     it('updatePalette emits colors used', fakeAsync(() => {
@@ -101,7 +101,7 @@ describe('HBoxPlotComponent', () => {
       tick();
 
       expect(colors).toBeTruthy();
-      expect(colors).toEqual(ans.pallete);
+      expect(colors).toEqual(ans.palette);
     }));
 
   });

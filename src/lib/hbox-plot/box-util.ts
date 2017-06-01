@@ -20,7 +20,7 @@ export class BoxUtil {
   datumToBox(data: number[]): BoxDefinition {
 
     let box = new BoxDefinition();
-    if (!data) {
+    if (!data || data.length === 0) {
       return box;
     }
 
@@ -51,5 +51,18 @@ export class BoxUtil {
 
     box.outliers = data.filter(v => (v < box.lowWskr || v > box.highWskr));
     return box;
+  }
+
+  mockEmptyValues(boxes: BoxDefinition[], missingVal: number) {
+    boxes.forEach(box => {
+      if (box.mean === undefined || box.mean === null) {
+        box.mean = missingVal;
+        box.median = missingVal;
+        box.fstQnt = missingVal;
+        box.thrdQnt = missingVal;
+        box.lowWskr = missingVal;
+        box.highWskr = missingVal;
+      }
+    });
   }
 }

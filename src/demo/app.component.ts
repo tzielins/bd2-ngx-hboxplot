@@ -12,7 +12,7 @@ export class AppComponent {
 
   testData: number[][];
 
-  isHidden = true;
+  isHidden = false;
 
   labels: string[];
 
@@ -25,7 +25,8 @@ export class AppComponent {
       [30],
       [20, 20.5, 20.6],
       [28, 29.7, 28.5],
-      [21.5, 29.7, 28.4, 29.5, 24, 24.1, 25.9, 24.7, 23.7, 24.3, 23.4, 24.5, 22.5, 23.7, 23.9, 23.5]
+      [21.5, 29.7, 28.4, 29.5, 24, 24.1, 25.9, 24.7, 23.7, 24.3, 23.4, 24.5, 22.5, 23.7, 23.9, 23.5],
+      []
     ];
 
     let nr = Math.random() * 15 + 1;

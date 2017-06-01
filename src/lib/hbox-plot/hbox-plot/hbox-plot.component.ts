@@ -31,8 +31,8 @@ export class LookAndFeel {
   outliersStrokeWidth = '1px';
   outliersCircleRadius = 3;
   outliersFillOpacity = 0.35;
-
 }
+
 
 export let defualtLookAndFeel: () => LookAndFeel = function () {
   return new LookAndFeel();
@@ -51,7 +51,7 @@ export class GraphicContext {
   yLeftAxis: Axis<string>;
   yRightAxis: Axis<string>;
 
-  pallete: string[];
+  palette: string[];
 
   dataWrapper: Selection<SVGGElement, any, null, undefined>;
 
@@ -95,7 +95,6 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   hidden = false;
 
-  //isHidden = false;
 
   @Input()
   data: number[][];
@@ -213,7 +212,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   updatePlot() {
 
 
-    let boxes = this.boxUtil.dataToBoxes(this.data);
+    this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
+    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain);
+
 
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
 
@@ -221,9 +222,6 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.graphicContext = this.plotAxisBox(boxes, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
 
-    this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
-    this.colorBoxes(boxes, this.graphicContext.pallete);
-    this.labelBoxes(boxes, this.labels);
 
     this.graphicContext = this.plotDataBoxes(boxes, this.lookAndFeel, this.mainPane, this.graphicContext);
 
@@ -233,16 +231,29 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
+  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[]): BoxDefinition[] {
+
+    let boxes = this.boxUtil.dataToBoxes(data);
+
+    this.boxUtil.mockEmptyValues(boxes, domain[1]);
+    this.labelBoxes(boxes, labels);
+
+    this.colorBoxes(boxes, palette);
+
+    return boxes;
+
+  }
+
 
   updatePalette(data: any[], palette: string[], graphicContext: GraphicContext): GraphicContext {
 
     if (!palette || palette.length === 0) {
-      graphicContext.pallete = BD2ColorPalette.palette(data.length);
+      graphicContext.palette = BD2ColorPalette.palette(data.length);
     } else {
-      graphicContext.pallete = BD2ColorPalette.extendPalette(palette, data.length);
+      graphicContext.palette = BD2ColorPalette.extendPalette(palette, data.length);
 
     }
-    this.colors.next(graphicContext.pallete.slice());
+    this.colors.next(graphicContext.palette.slice());
 
     return graphicContext;
   }
@@ -396,7 +407,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     graphicContext.tooltipBox = graphicContext.tooltipWrapper.append<SVGGElement>("rect")
       .style("fill", "white")
-      .style("fill-opacity", 0.6)
+      .style("fill-opacity", 0.8)
       .style("stroke", "grey")
     //.style("visibility", "hidden");
     ;

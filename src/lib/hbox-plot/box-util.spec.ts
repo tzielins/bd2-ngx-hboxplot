@@ -60,6 +60,41 @@ describe('BoxUtil', () => {
 
     });
 
+    it('mocks empty values with provided', () => {
+      let data = [];
+      let box = util.datumToBox(data);
+
+      expect(box).toBeTruthy();
+      expect(box.mean).toBeUndefined();
+
+      let boxes = [box];
+      util.mockEmptyValues(boxes, 1);
+
+      expect(box.mean).toBe(1);
+      expect(box.median).toBe(1);
+      expect(box.thrdQnt).toBe(1);
+      expect(box.fstQnt).toBe(1);
+      expect(box.lowWskr).toBe(1);
+      expect(box.highWskr).toBe(1);
+      expect(box.outliers).toEqual([]);
+    });
+
+    it('handles empty', () => {
+
+      let data = [];
+      let box = util.datumToBox(data);
+
+      expect(box).toBeTruthy();
+      expect(box.mean).toBeUndefined();
+      expect(box.median).toBeUndefined();
+      expect(box.thrdQnt).toBeUndefined();
+      expect(box.fstQnt).toBeUndefined();
+      expect(box.lowWskr).toBeUndefined();
+      expect(box.highWskr).toBeUndefined();
+      expect(box.outliers).toEqual([]);
+
+    });
+
     it('handles singulars', () => {
 
       let data = [5];

@@ -11,50 +11,31 @@ import {BoxDefinition} from "../box-dom";
 import {SmartRounder} from "../smart-rounding";
 
 
-export interface LookAndFeel {
-  vMargin: number;
-  hMarginL: number;
-  hMarginR: number;
-  rowWidth: number;
-  rowGap: number;
+export class LookAndFeel {
 
-  boxStrokeWidth: string;
-  boxFillOpacity: number;
-  meanStrokeWidth: string;
+  vMargin = 25;
+  hMarginL = 20;
+  hMarginR = 15;
+  rowWidth = 40;
+  rowGap = 0.3;
 
-  labelFont: string;
-  labelFillOpacity: number;
+  boxStrokeWidth = '2px';
+  boxFillOpacity = 0.35;
+  meanStrokeWidth = '4px';
 
-  whiskerStrokeWidth: string;
+  labelFont = '12px';
+  labelFillOpacity = 0.35;
 
-  outliersStrokeWidth: string;
-  outliersCircleRadius: number;
-  outliersFillOpacity: number;
+  whiskerStrokeWidth = '1px';
+
+  outliersStrokeWidth = '1px';
+  outliersCircleRadius = 3;
+  outliersFillOpacity = 0.35;
+
 }
 
 export let defualtLookAndFeel: () => LookAndFeel = function () {
-  let look: LookAndFeel = {
-    vMargin: 25,
-    hMarginL: 20,
-    hMarginR: 15,
-    rowWidth: 40,
-    rowGap: 0.3,
-
-    boxStrokeWidth: '2px',
-    boxFillOpacity: 0.35,
-    meanStrokeWidth: '4px',
-
-    labelFont: '12px',
-    labelFillOpacity: 0.35,
-
-    whiskerStrokeWidth: '1px',
-
-    outliersStrokeWidth: '1px',
-    outliersCircleRadius: 3,
-    outliersFillOpacity: 0.35,
-
-  };
-  return look;
+  return new LookAndFeel();
 };
 
 export class GraphicContext {
@@ -128,6 +109,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   labels: string[] = [];
 
+  @Input()
+  lookAndFeel = defualtLookAndFeel();
+
   @Output()
   colors = new EventEmitter<string[]>();
 
@@ -138,7 +122,6 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   private mainPane: Selection<SVGGElement, any, null, undefined>;
 
-  private lookAndFeel = defualtLookAndFeel();
   private graphicContext = new GraphicContext();
   private boxUtil = new BoxUtil();
 
@@ -153,7 +136,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    */
   ngAfterViewInit() {
     this.changeDetectorRef.detach();
-    console.log("AFI");
+    //console.log("AFI");
   }
 
   /**

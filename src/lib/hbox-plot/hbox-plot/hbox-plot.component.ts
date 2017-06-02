@@ -16,8 +16,8 @@ export class LookAndFeel {
   vMargin = 25;
   hMarginL = 20;
   hMarginR = 15;
-  rowWidth = 40;
-  rowGap = 0.3;
+  rowWidth = 30;
+  rowGap = 0.2;
 
   boxStrokeWidth = '2px';
   boxFillOpacity = 0.35;

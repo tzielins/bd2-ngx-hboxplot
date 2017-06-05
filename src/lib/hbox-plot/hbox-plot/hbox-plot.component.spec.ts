@@ -139,7 +139,7 @@ describe('HBoxPlotComponent', () => {
 
     });
 
-    it("prepareLabels creates labels elements", () => {
+    it("prepareLabels creates labels elements", fakeAsync(() => {
       let boxes = boxUtil.dataToBoxes([[1], [2]]);
       boxes[0].label = "A";
       boxes[1].label = "B";
@@ -153,6 +153,9 @@ describe('HBoxPlotComponent', () => {
 
       graphicContext = component.prepareLabels(boxes, mainPane, lookAndFeel, graphicContext);
 
+      //fake async is necesary as the legend is rendered with a delay
+      tick(10);
+
       expect(graphicContext.labelsWrapper).toBeTruthy();
 
       expect(graphicContext.labelsWrapper.selectAll("g.yLabel").size()).toBe(2);
@@ -162,7 +165,7 @@ describe('HBoxPlotComponent', () => {
       expect(gLabel.selectAll("rect.yLabel").size()).toBe(1);
       expect(gLabel.selectAll("text").size()).toBe(1);
       expect(gLabel.selectAll("text").text()).toBe('A');
-    });
+    }));
 
   });
 

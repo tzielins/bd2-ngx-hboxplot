@@ -11,10 +11,12 @@
   <div class="row">
     <div class="col-sm-9">
 
+      <div [hidden]="isHidden">
       <bd2-ngx-hbox-plot
         [data]="data" [labels]="labels" [hidden]="isHidden"
       >
       </bd2-ngx-hbox-plot>
+      </div>
       {{detection()}}
     </div>
     <div class="col-sm-3">

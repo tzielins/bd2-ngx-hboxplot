@@ -67,7 +67,7 @@ export class GraphicContext {
   selector: 'bd2-ngx-hbox-plot',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="hbox-plot"></div>
+    <div class="hbox-plot" [hidden]="hidden"></div>
   `,
   styles: [
       `
@@ -148,7 +148,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.initSVG();
 
-    this.handleHiding();
+    //this.handleHiding();
 
     if (!this.data) {
       return;
@@ -196,18 +196,21 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = context;
   }
 
+  /* Not needed any more, the hidding is achieved by simple div hidden attribute
+  // and the problem with labels background rendering is solved using delayed rendering with a timer.
   handleHiding() {
     if (this.hidden) {
       this.removed = this.d3Svg.remove();
     } else {
       if (this.removed) {
         this.d3.select(this.parentNativeElement)
+          .select('.hbox-plot')
           .append(() => this.d3Svg.node());
         this.removed = undefined;
       }
     }
 
-  }
+  }*/
 
   updatePlot() {
 
@@ -361,36 +364,43 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       <Selection<SVGSVGElement, BoxDefinition, null, undefined>> newLabels.merge(<any>labels);
 
 
-    let bboxes: SVGRect[] = [];
-
-    enterUpdate.select<SVGSVGElement>("text")
-      .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
-      .text(d => d.label)
-      .each(function (d) {
-        bboxes.push(this.getBBox());
-        //console.log("D: " + d.label, this.getBBox());
-      });
-
-    let trigers = enterUpdate.select<SVGSVGElement>(".yTrigger")
-      .style("fill", d => d.color)
-      .style("stroke", d => d.color);
+    //called with delay to allow, parent divs to component sets their visibility, otherwise the bboxes cannot be calculated
+    //and the labels backgrounds and trigers are not rendered correctly
+    //it is a hack, but don't know how to do it correctly
+    setTimeout( () => {
 
 
-    trigers.data(bboxes)
-      .attr("x", -7)
-      .attr("y", b => b.y - 3)
-      .attr("width", b => 7)
-      .attr("height", b => b.height + 6);
+      let bboxes: SVGRect[] = [];
 
-    let frames = enterUpdate.select<SVGSVGElement>("rect.yLabel")
-      .style("fill", d => d.color)
-      .style("fill-opacity", lookAndFeel.labelFillOpacity);
+      enterUpdate.select<SVGSVGElement>("text")
+        .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
+        .text(d => d.label)
+        .each(function (d) {
+          bboxes.push(this.getBBox());
+          //console.log("D: " + d.label, this.getBBox());
+        });
 
-    frames.data(bboxes)
-      .attr("x", 0)
-      .attr("y", b => b.y - 3)
-      .attr("width", b => b.width + 10)
-      .attr("height", b => b.height + 7);
+      let trigers = enterUpdate.select<SVGSVGElement>(".yTrigger")
+        .style("fill", d => d.color)
+        .style("stroke", d => d.color);
+
+
+      trigers.data(bboxes)
+        .attr("x", -7)
+        .attr("y", b => b.y - 3)
+        .attr("width", b => 7)
+        .attr("height", b => b.height + 6);
+
+      let frames = enterUpdate.select<SVGSVGElement>("rect.yLabel")
+        .style("fill", d => d.color)
+        .style("fill-opacity", lookAndFeel.labelFillOpacity);
+
+      frames.data(bboxes)
+        .attr("x", 0)
+        .attr("y", b => b.y - 3)
+        .attr("width", b => b.width + 10)
+        .attr("height", b => b.height + 7);
+    }, 10);
 
     return graphicContext;
   }

@@ -146,6 +146,10 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     //console.log("Changes", changes);
 
+    //otherwise the hidden on inner div was not updated
+    this.changeDetectorRef.detectChanges();
+
+    
     this.initSVG();
 
     //this.handleHiding();

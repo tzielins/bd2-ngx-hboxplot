@@ -18,6 +18,8 @@ export class AppComponent {
 
   labelsOn = 'always';
 
+  sorted = false;
+
   private ci = 0;
 
   constructor() {
@@ -44,6 +46,10 @@ export class AppComponent {
 
   toggleHidden() {
     this.isHidden = !this.isHidden;
+  }
+
+  toggleSorted() {
+    this.sorted = !this.sorted;
   }
 
   toggleLabels() {

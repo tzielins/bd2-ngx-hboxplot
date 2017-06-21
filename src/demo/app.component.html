@@ -13,7 +13,7 @@
 
       <div [hidden]="isHidden">
       <bd2-ngx-hbox-plot
-        [data]="data" [labels]="labels" [hidden]="isHidden" [labelsOn]="labelsOn"
+        [data]="data" [labels]="labels" [hidden]="isHidden" [labelsOn]="labelsOn" [sorted]="sorted"
       >
       </bd2-ngx-hbox-plot>
       </div>
@@ -26,6 +26,7 @@
       <div class="form-group">
         <label (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label><br>
         <label (click)="toggleLabels()">Toggle Labels: {{labelsOn}}</label><br>
+        <label (click)="toggleSorted()">Toggle Sorted: {{sorted}}</label><br>
 
         <label>Data:</label>
         <ul class="list-unstyled" style="margin: 1em;">

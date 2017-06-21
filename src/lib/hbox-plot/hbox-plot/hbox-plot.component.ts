@@ -130,6 +130,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   lookAndFeel = defualtLookAndFeel();
 
+  @Input()
+  sorted = false;
+
   @Output()
   colors = new EventEmitter<string[]>();
 
@@ -239,7 +242,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
     this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
-    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain);
+    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain, this.sorted);
 
 
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
@@ -257,7 +260,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
-  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[]): BoxDefinition[] {
+  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[], sorted: boolean): BoxDefinition[] {
 
     let boxes = this.boxUtil.dataToBoxes(data);
 
@@ -266,6 +269,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.colorBoxes(boxes, palette);
 
+    if (sorted) {
+      boxes = boxes.sort( (b1,b2) => b1.median-b2.median);
+    }
     return boxes;
 
   }

@@ -25,12 +25,16 @@ export class LookAndFeel {
 
   labelFont = '12px';
   labelFillOpacity = 0.35;
+  backLabelOpacity = 0.30;
+
+  backdropColor = 'white';
+  backdropOpacity = 1;
 
   whiskerStrokeWidth = '1px';
 
   outliersStrokeWidth = '1px';
   outliersCircleRadius = 3;
-  outliersFillOpacity = 0.35;
+  outliersFillOpacity = 0.4;
 }
 
 
@@ -60,6 +64,18 @@ export class GraphicContext {
   tooltipBox: Selection<SVGGElement, any, null, undefined>;
 
   labelsWrapper: Selection<SVGGElement, any, null, undefined>;
+  backLabelsWrapper: Selection<SVGGElement, any, null, undefined>;
+}
+
+function offsetScaleValue(x: number, pixOffset: number, scale: ScaleLinear<number, number>) {
+  let r = scale.range();
+  let pos = scale(x) + pixOffset;
+  if (pos < r[0]) {
+    return r[0];
+  } else if (pos > r[1]) {
+    return r[1];
+  }
+  return pos;
 }
 
 
@@ -109,6 +125,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   labels: string[] = [];
 
   @Input()
+  labelsOn = 'always'; //trigger //null
+
+  @Input()
   lookAndFeel = defualtLookAndFeel();
 
   @Output()
@@ -149,7 +168,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     //otherwise the hidden on inner div was not updated
     this.changeDetectorRef.detectChanges();
 
-    
+
     this.initSVG();
 
     //this.handleHiding();
@@ -201,20 +220,20 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
   /* Not needed any more, the hidding is achieved by simple div hidden attribute
-  // and the problem with labels background rendering is solved using delayed rendering with a timer.
-  handleHiding() {
-    if (this.hidden) {
-      this.removed = this.d3Svg.remove();
-    } else {
-      if (this.removed) {
-        this.d3.select(this.parentNativeElement)
-          .select('.hbox-plot')
-          .append(() => this.d3Svg.node());
-        this.removed = undefined;
-      }
-    }
+   // and the problem with labels background rendering is solved using delayed rendering with a timer.
+   handleHiding() {
+   if (this.hidden) {
+   this.removed = this.d3Svg.remove();
+   } else {
+   if (this.removed) {
+   this.d3.select(this.parentNativeElement)
+   .select('.hbox-plot')
+   .append(() => this.d3Svg.node());
+   this.removed = undefined;
+   }
+   }
 
-  }*/
+   }*/
 
   updatePlot() {
 
@@ -234,7 +253,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
 
-    this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.lookAndFeel, this.graphicContext);
+    this.graphicContext = this.prepareLabels(boxes, this.mainPane, this.lookAndFeel, this.graphicContext, this.labelsOn);
 
   }
 
@@ -316,15 +335,24 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
   prepareLabels(boxes: BoxDefinition[], mainPane: Selection<SVGGElement, any, null, undefined>, lookAndFeel: LookAndFeel,
-                graphicContext: GraphicContext): GraphicContext {
+                graphicContext: GraphicContext, labelsOn: string): GraphicContext {
 
     if (!graphicContext.labelsWrapper) {
       graphicContext.labelsWrapper = mainPane.append<SVGGElement>('g')
         .classed("labelsWrapper", true);
     }
 
+    if (!graphicContext.backLabelsWrapper) {
+      graphicContext.backLabelsWrapper = mainPane.insert<SVGGElement>('g', 'g.dataWrapper')
+        .classed("backLabelsWrapper", true);
+    }
+
+    let backLabelsOn = labelsOn === 'always';
+    let mainLabelsOn = labelsOn === 'always' || labelsOn === 'trigger';
+
+
     let labels = graphicContext.labelsWrapper.selectAll("g.yLabel")
-      .data(boxes);
+      .data(mainLabelsOn ? boxes : []);
 
     labels.exit().remove();
 
@@ -363,15 +391,41 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr('x', 5)
       .style("visibility", "hidden");
 
+    let backLabels = graphicContext.backLabelsWrapper.selectAll("g.yLabel")
+      .data(backLabelsOn ? boxes : []);
+
+    backLabels.exit().remove();
+
+    let newBackLabels = backLabels.enter()
+      .append<SVGGElement>('g')
+      .classed("yLabel", true);
+
+    /*
+     newBackLabels.append<SVGGElement>("rect")
+     .attr("class", "yLabel")
+     .style("fill-opacity", 0.05);
+     */
+
+    newBackLabels.append<SVGGElement>('text')
+      .attr("class", "yLabel")
+      .attr("text-anchor", "left")
+      .attr("dominant-baseline", "central")
+      .style("font-size", lookAndFeel.labelFont)
+      .style("opacity", lookAndFeel.backLabelOpacity)
+      .attr('x', 5);
+    //.style("visibility", "hidden");
+
 
     let enterUpdate: Selection<SVGSVGElement, BoxDefinition, null, undefined> =
       <Selection<SVGSVGElement, BoxDefinition, null, undefined>> newLabels.merge(<any>labels);
 
+    let backEnterUpdate: Selection<SVGSVGElement, BoxDefinition, null, undefined> =
+      <Selection<SVGSVGElement, BoxDefinition, null, undefined>> newBackLabels.merge(<any>backLabels);
 
     //called with delay to allow, parent divs to component sets their visibility, otherwise the bboxes cannot be calculated
     //and the labels backgrounds and trigers are not rendered correctly
     //it is a hack, but don't know how to do it correctly
-    setTimeout( () => {
+    setTimeout(() => {
 
 
       let bboxes: SVGRect[] = [];
@@ -379,6 +433,15 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       enterUpdate.select<SVGSVGElement>("text")
         .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
         .text(d => d.label)
+        .each(function (d) {
+          bboxes.push(this.getBBox());
+          //console.log("D: " + d.label, this.getBBox());
+        });
+
+      backEnterUpdate.select<SVGSVGElement>("text")
+        .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
+        .text(d => d.label)
+        //.style("fill", d => d.color)
         .each(function (d) {
           bboxes.push(this.getBBox());
           //console.log("D: " + d.label, this.getBBox());
@@ -404,6 +467,19 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         .attr("y", b => b.y - 3)
         .attr("width", b => b.width + 10)
         .attr("height", b => b.height + 7);
+
+
+      /*
+       let backFrames = backEnterUpdate.select<SVGSVGElement>("rect.yLabel")
+       .style("fill", d => d.color);
+
+       backFrames.data(bboxes)
+       .attr("x", 0)
+       .attr("y", b => b.y - 3)
+       .attr("width", b => b.width + 10)
+       .attr("height", b => b.height + 7);
+       */
+
     }, 10);
 
     return graphicContext;
@@ -631,6 +707,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   updateBoxWidgets(boxWidgets: Selection<SVGGElement, BoxDefinition, null, undefined>,
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
 
+    boxWidgets.select("rect.backdrop")
+      .call(this.positionBackdrop, graphicContext);
+
     this.updateWhiskers(<any> boxWidgets.select("g.whiskers"), graphicContext);
 
     boxWidgets.select("g.box rect")
@@ -654,6 +733,26 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
+
+  positionBackdrop(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
+
+    elm.attr("x", (d) => offsetScaleValue(d.lowWskr, -5, graphicContext.xScale))
+      .attr("y", (d) => {
+        return graphicContext.yScale(d.key);
+      })
+      .attr("width", (d) => {
+        let x1 = offsetScaleValue(d.lowWskr, -5, graphicContext.xScale);
+        let x2 = offsetScaleValue(d.highWskr, +5, graphicContext.xScale);
+        return x2 - x1;
+      })
+      .attr("height", (d) => {
+        return graphicContext.yScale.bandwidth();
+      })
+    //.style("stroke", d => d.color)
+    //.style("fill", d => d.color)
+    ;
+
+  }
 
   positionBoxRectangle(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
@@ -852,6 +951,13 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
 
     let instance = this;
+
+    let backdrops = newBoxWidgets.append<SVGGElement>("rect").attr("class", "backdrop")
+    //.style("stroke-width", lookAndFeel.boxStrokeWidth)
+      .style("fill-opacity", lookAndFeel.backdropOpacity)
+      .style("fill", lookAndFeel.backdropColor)
+      .call(this.positionBackdrop, graphicContext);
+    ;
 
     let whiskers = newBoxWidgets.append<SVGGElement>("g").attr("class", "whiskers");
 

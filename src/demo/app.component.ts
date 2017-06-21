@@ -16,6 +16,8 @@ export class AppComponent {
 
   labels: string[];
 
+  labelsOn = 'always';
+
   private ci = 0;
 
   constructor() {
@@ -42,6 +44,16 @@ export class AppComponent {
 
   toggleHidden() {
     this.isHidden = !this.isHidden;
+  }
+
+  toggleLabels() {
+    if (this.labelsOn === 'always') {
+      this.labelsOn = "trigger";
+    } else if (this.labelsOn === 'trigger') {
+      this.labelsOn = null;
+    } else {
+      this.labelsOn = 'always';
+    }
   }
 
   generateData() {
@@ -71,7 +83,7 @@ export class AppComponent {
     let LET = "ABCDEFGHIJKLMN ";
     let labels = d.map((v, ix) => {
 
-      let s = Math.random() * 12 + 1;
+      let s = Math.random() * 30 + 3;
       let label = (ix + 1) + '. ';
       for (let i = 0; i < s; i++) {
         label += LET[Math.round(Math.random() * (LET.length - 1))];

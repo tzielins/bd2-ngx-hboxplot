@@ -18,7 +18,7 @@ export class AppComponent {
 
   labelsOn = 'always';
 
-  sorted = false;
+  sorted = 'median';
 
   private ci = 0;
 
@@ -49,7 +49,14 @@ export class AppComponent {
   }
 
   toggleSorted() {
-    this.sorted = !this.sorted;
+    if (this.sorted === 'median') {
+      this.sorted = 'label';
+    } else if (this.sorted === 'label') {
+      this.sorted = 'none';
+    } else {
+      this.sorted = 'median';
+    }
+    ;
   }
 
   toggleLabels() {
@@ -86,14 +93,15 @@ export class AppComponent {
 
     }
 
-    let LET = "ABCDEFGHIJKLMN ";
+    let LET = "ABCDEFGHIJKLMNabcdef";
     let labels = d.map((v, ix) => {
 
       let s = Math.random() * 30 + 3;
-      let label = (ix + 1) + '. ';
+      let label = ""; //
       for (let i = 0; i < s; i++) {
         label += LET[Math.round(Math.random() * (LET.length - 1))];
       }
+      label += " " + (ix + 1) + '. ';
 
       return label;
     });

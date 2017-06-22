@@ -139,8 +139,33 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input()
   lookAndFeel = defualtLookAndFeel();
 
-  @Input()
-  sorted = false;
+  @Input() // median, label, null
+  set sorted(sorting: string) {
+
+    if (sorting === 'median') {
+      this.sortFunction = (b1: BoxDefinition, b2: BoxDefinition) => b1.median - b2.median;
+    } else if (sorting === 'label') {
+      //console.log("N",navigator.language);
+      /*if (navigator.language) {
+       this.sortFunction = (b1: BoxDefinition, b2: BoxDefinition) =>
+       b1.label.localeCompare(b2.label, navigator.language, {sensitivity: 'case'});
+       } else {
+       this.sortFunction = (b1: BoxDefinition, b2: BoxDefinition) => b1.label.localeCompare(b2.label);
+       };*/
+      this.sortFunction = (b1: BoxDefinition, b2: BoxDefinition) => {
+        if (b1.label === b2.label) {
+          return 0;
+        }
+        if (b1.label < b2.label) {
+          return -1;
+        }
+        return 1;
+      };
+    } else {
+      this.sortFunction = (b1: BoxDefinition, b2: BoxDefinition) => b1.ix - b2.ix;
+    }
+  };
+
 
   sortChanged = false;
 
@@ -156,6 +181,11 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   private graphicContext = new GraphicContext();
   private boxUtil = new BoxUtil();
+
+  sortFunction = function (b1: BoxDefinition, b2: BoxDefinition) {
+    return b1.ix - b2.ix;
+  };
+
 
   constructor(private ngZone: NgZone, private changeDetectorRef: ChangeDetectorRef, element: ElementRef) {
     this.d3 = d3;
@@ -256,7 +286,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext.transitionTime = this.lookAndFeel.transitionTime;
 
     this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
-    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain, this.sorted);
+    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain, this.sortFunction);
 
 
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
@@ -266,7 +296,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext = this.plotAxisBox(boxes, this.domain, this.lookAndFeel, this.mainPane, this.graphicContext);
 
 
-    this.graphicContext = this.plotDataBoxes(boxes, this.lookAndFeel, this.mainPane, this.graphicContext, this.sorted, this.sortChanged);
+    this.graphicContext = this.plotDataBoxes(boxes, this.lookAndFeel, this.mainPane, this.graphicContext,
+      this.sortFunction, this.sortChanged);
 
     this.graphicContext = this.prepareTooltip(this.mainPane, this.graphicContext);
 
@@ -274,7 +305,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
-  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[], sorted: boolean): BoxDefinition[] {
+  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[],
+                   sortFunction: (b1: BoxDefinition, b2: BoxDefinition) => number): BoxDefinition[] {
 
     let boxes = this.boxUtil.dataToBoxes(data);
 
@@ -283,9 +315,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.colorBoxes(boxes, palette);
 
-    if (sorted) {
-      boxes = boxes.sort((b1, b2) => b1.median - b2.median);
-    }
+    boxes = boxes.sort(sortFunction);
     return boxes;
 
   }
@@ -699,7 +729,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
   plotDataBoxes(boxes: BoxDefinition[], lookAndFeel: LookAndFeel, mainPane: Selection<SVGGElement, any, null, undefined>,
-                graphicContext: GraphicContext, sorted: boolean, sortChanged: boolean): GraphicContext {
+                graphicContext: GraphicContext,
+                sortFunction: (b1: BoxDefinition, b2: BoxDefinition) => number, sortChanged: boolean): GraphicContext {
 
     if (!graphicContext.dataWrapper) {
       graphicContext.dataWrapper = mainPane.append<SVGGElement>("g").attr("class", "dataWrapper");
@@ -710,14 +741,10 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     let boxWidgets = <Selection<SVGGElement, BoxDefinition, null, undefined>> graphicContext.dataWrapper.selectAll(".boxWidget");
 
     //console.log('S: '+sorted+" CS: "+sortChanged);
-    
+
     //lets reorder the boxes first, so they will animate nicelly
     if (sortChanged) {
-      if (this.sorted) {
-        boxWidgets = boxWidgets.sort((b1, b2) => b1.median - b2.median);
-      } else {
-        boxWidgets = boxWidgets.sort((b1, b2) => b1.ix - b2.ix);
-      }
+      boxWidgets = boxWidgets.sort(sortFunction);
     }
 
     boxWidgets = boxWidgets.data(boxes);
@@ -773,7 +800,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionBackdrop(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
-    elm.attr("x", (d) => offsetScaleValue(d.lowWskr, -5, graphicContext.xScale))
+    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm
+      .attr("x", (d) => offsetScaleValue(d.lowWskr, -5, graphicContext.xScale))
       .attr("y", (d) => {
         return graphicContext.yScale(d.key);
       })

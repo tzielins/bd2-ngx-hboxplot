@@ -308,7 +308,8 @@ describe('HBoxPlotComponent', () => {
         expect(graphicContext.tooltipWrapper).toBeTruthy();
         expect(graphicContext.tooltipBox).toBeTruthy();
         expect(graphicContext.tooltipText).toBeTruthy();
-        expect(graphicContext.tooltipWrapper.style("visibility")).toBe("hidden");
+        //expect(graphicContext.tooltipWrapper.style("visibility")).toBe("hidden");
+        expect(graphicContext.tooltipWrapper.style("display")).toBe("none");
       });
 
       it("showTooltip shows tooltip element", () => {
@@ -318,7 +319,9 @@ describe('HBoxPlotComponent', () => {
 
         component.showTooltip(10, 20, data[0].key);
 
-        expect(graphicContext.tooltipWrapper.style("visibility")).toBe("visible");
+        //expect(graphicContext.tooltipWrapper.style("visibility")).toBe("visible");
+        expect(graphicContext.tooltipWrapper.style("display")).not.toBe("none");
+        expect(graphicContext.tooltipWrapper.style("display")).not.toBeNull();
         expect(graphicContext.tooltipText.text()).toBe("10");
 
       });
@@ -328,12 +331,15 @@ describe('HBoxPlotComponent', () => {
         graphicContext = component.prepareTooltip(mainPane, graphicContext);
         component.testGraphicContext(graphicContext);
 
-        graphicContext.tooltipWrapper.style("visibility", "visible");
-        expect(graphicContext.tooltipWrapper.style("visibility")).toBe("visible");
-
+        //graphicContext.tooltipWrapper.style("visibility", "visible");
+        //expect(graphicContext.tooltipWrapper.style("visibility")).toBe("visible");
+        graphicContext.tooltipWrapper.style("display", null);
+        expect(graphicContext.tooltipWrapper.style("display")).not.toBe("none");
+        expect(graphicContext.tooltipWrapper.style("display")).not.toBeNull();
         component.hideTooltip();
 
-        expect(graphicContext.tooltipWrapper.style("visibility")).toBe("hidden");
+        //expect(graphicContext.tooltipWrapper.style("visibility")).toBe("hidden");
+        expect(graphicContext.tooltipWrapper.style("display")).toBe("none");
 
       });
     });

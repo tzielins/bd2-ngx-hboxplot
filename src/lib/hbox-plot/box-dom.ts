@@ -11,5 +11,5 @@ export class BoxDefinition {
   key: string;
   label: string;
   color: string;
+  hidden: boolean;
 }
-

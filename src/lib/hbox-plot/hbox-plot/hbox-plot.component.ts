@@ -414,7 +414,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
     let labels = graphicContext.labelsWrapper.selectAll("g.yLabel")
-      .data(mainLabelsOn ? boxes : []);
+      .data(mainLabelsOn ? boxes : [], (d:BoxDefinition) => d.key);
 
     labels.exit().remove();
 
@@ -460,7 +460,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       ;
 
     let backLabels = graphicContext.backLabelsWrapper.selectAll("g.yLabel")
-      .data(backLabelsOn ? boxes : []);
+      .data(backLabelsOn ? boxes : [], (d:BoxDefinition) => d.key);
 
     backLabels.exit().remove();
 
@@ -510,7 +510,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
 
-      backEnterUpdate.select<SVGSVGElement>("text")
+      let elm  = backEnterUpdate.select<SVGSVGElement>("text");
+      elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+      elm
         .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
         .text(d => d.label)
         //.style("fill", d => d.color)
@@ -525,7 +527,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         .style("stroke", d => d.color);
 
 
-      trigers.data(bboxes)
+      let telm = trigers.data(bboxes);
+      telm = <any>(graphicContext.transitionOn ? telm.transition().duration(graphicContext.transitionTime) : elm);
+      telm
         .attr("x", -7)
         .attr("y", b => b.y - 3)
         .attr("width", b => 7)
@@ -769,11 +773,11 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     //console.log('S: '+sorted+" CS: "+sortChanged);
 
     //lets reorder the boxes first, so they will animate nicelly
-    if (sortChanged) {
+    /*if (sortChanged) {
       boxWidgets = boxWidgets.sort(sortFunction);
-    }
+    }*/
 
-    boxWidgets = boxWidgets.data(boxes);
+    boxWidgets = boxWidgets.data(boxes, d=> d.key);
 
 
     this.updateBoxWidgets(boxWidgets, lookAndFeel, graphicContext);
@@ -786,6 +790,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     boxWidgets.exit().remove();
 
+    //boxWidgets.order();
 
     return graphicContext;
   }
@@ -892,6 +897,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionOutlier(elm: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext) {
 
+    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
     elm.attr("cx", d => graphicContext.xScale(d[0]))
       .attr("cy", d => graphicContext.yScale(d[1]) + graphicContext.yScale.bandwidth() / 2)
       .style("stroke", d => d[2])

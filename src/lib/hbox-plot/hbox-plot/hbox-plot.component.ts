@@ -2,7 +2,7 @@ import {
   Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy, NgZone, ChangeDetectorRef,
   ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
-import {D3, d3, Selection, ScaleLinear} from "../../d3service";
+import {D3, d3, Selection, ScaleLinear, Transition} from "../../d3service";
 import {Axis} from "d3-axis";
 import {ScaleBand} from "d3-scale";
 import {BoxUtil} from "../box-util";
@@ -51,6 +51,7 @@ export class GraphicContext {
   get transitionOn(): boolean {
     return (this.transitionTime && this.transitionTime > 0);
   };
+  transition: Transition<any,any,any,any>;
 
   workspaceWidth: number;
   workspaceHeight: number;
@@ -287,6 +288,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   updatePlot() {
 
     this.graphicContext.transitionTime = this.lookAndFeel.transitionTime;
+    this.ngZone.runOutsideAngular(() => {
+      this.graphicContext.transition = this.graphicContext.transitionOn ? this.d3.transition(null).duration(this.graphicContext.transitionTime) : undefined;
+    });
 
     this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
 
@@ -511,7 +515,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
       let elm  = backEnterUpdate.select<SVGSVGElement>("text");
-      elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+      elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
       elm
         .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
         .text(d => d.label)
@@ -528,7 +532,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
       let telm = trigers.data(bboxes);
-      telm = <any>(graphicContext.transitionOn ? telm.transition().duration(graphicContext.transitionTime) : elm);
+      telm = <any>(graphicContext.transitionOn ? telm.transition(graphicContext.transition) : telm);
       telm
         .attr("x", -7)
         .attr("y", b => b.y - 3)
@@ -798,7 +802,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   updateBoxWidgets(boxWidgets: Selection<SVGGElement, BoxDefinition, null, undefined>,
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
 
-    this.ngZone.runOutsideAngular(() => {
+    //this.ngZone.runOutsideAngular(() => {
 
       boxWidgets.select("rect.backdrop")
         .call(this.positionBackdrop, graphicContext);
@@ -824,14 +828,14 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
       out.exit().remove();
 
-    });
+    //});
 
   }
 
 
   positionBackdrop(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x", (d) => offsetScaleValue(d.lowWskr, -5, graphicContext.xScale))
       .attr("y", (d) => {
@@ -853,7 +857,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionBoxRectangle(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x", (d) => graphicContext.xScale(d.fstQnt))
       .attr("y", (d) => {
@@ -870,7 +874,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionMedianLine(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x1", (d, i) => graphicContext.xScale(d.median))
       .attr("y1", (d, i) => graphicContext.yScale(d.key))
@@ -886,7 +890,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionMeanLine(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x1", (d, i) => graphicContext.xScale(d.mean))
       .attr("y1", (d, i) => graphicContext.yScale(d.key))
@@ -897,7 +901,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionOutlier(elm: Selection<SVGGElement, any, null, undefined>, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm.attr("cx", d => graphicContext.xScale(d[0]))
       .attr("cy", d => graphicContext.yScale(d[1]) + graphicContext.yScale.bandwidth() / 2)
       .style("stroke", d => d[2])
@@ -923,7 +927,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionWhiskerLine(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, left: boolean, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x1", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.thrdQnt))
       .attr("y1", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
@@ -938,7 +942,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   positionWhiskerTip(elm: Selection<SVGGElement, BoxDefinition, null, undefined>, left: boolean, graphicContext: GraphicContext) {
 
-    elm = <any>(graphicContext.transitionOn ? elm.transition().duration(graphicContext.transitionTime) : elm);
+    elm = <any>(graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
     elm
       .attr("x1", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.highWskr))
       .attr("y1", (d, i) => graphicContext.yScale(d.key))
@@ -1061,7 +1065,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   createBoxWidgets(newBoxWidgets: Selection<SVGGElement, BoxDefinition, null, undefined>,
                    lookAndFeel: LookAndFeel, graphicContext: GraphicContext) {
 
-    this.ngZone.runOutsideAngular(() => {
+    //this.ngZone.runOutsideAngular(() => {
 
       let instance = this;
 
@@ -1089,7 +1093,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         .call(this.createOutlier, lookAndFeel, graphicContext, this.positionOutlier)
       ;
 
-    });
+    //});
   }
 
 }

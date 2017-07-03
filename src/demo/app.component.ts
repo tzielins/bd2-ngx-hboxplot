@@ -93,7 +93,7 @@ export class AppComponent {
 
     }
 
-    let LET = "ABCDEFGHIJKLMNabcdef";
+    let LET = "ABCDEFGHIJKLMN abcdef";
     let labels = d.map((v, ix) => {
 
       let s = Math.random() * 30 + 3;

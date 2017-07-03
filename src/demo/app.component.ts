@@ -9,7 +9,8 @@ export class AppComponent {
   title = 'Vertical Box Plot';
 
   data: number[][] = [];
-
+  removed: number[] = [];
+  
   testData: number[][];
 
   isHidden = false;
@@ -42,6 +43,14 @@ export class AppComponent {
 
     //this.generateData();
     this.generateData();
+  }
+
+  toggleRemoved() {
+    if (this.removed.length === 0) {
+      this.removed = [0,3];
+    } else {
+      this.removed = [];
+    }
   }
 
   toggleHidden() {

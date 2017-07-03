@@ -125,6 +125,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   data: number[][];
 
   @Input()
+  removed: number[] = [];
+
+  @Input()
   domain: number[] = [17, 36];
 
   @Input()
@@ -175,7 +178,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   private d3: D3;
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
-  private removed: Selection<SVGSVGElement, any, null, undefined>;
+  //private removedSVG: Selection<SVGSVGElement, any, null, undefined>;
 
   private mainPane: Selection<SVGGElement, any, null, undefined>;
 
@@ -230,7 +233,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   isDataUpdate(changes: any): boolean {
 
-    return (changes.data || changes.domain || changes.palette || changes.labels );
+    return (changes.data || changes.removed || changes.domain || changes.palette || changes.labels );
   }
 
   initSVG() {
@@ -286,8 +289,11 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext.transitionTime = this.lookAndFeel.transitionTime;
 
     this.graphicContext = this.updatePalette(this.data, this.palette, this.graphicContext);
-    let boxes = this.prepareDataModel(this.data, this.labels, this.graphicContext.palette, this.domain, this.sortFunction);
 
+    let boxes = this.prepareDataModel(this.data, this.removed, this.labels, this.graphicContext.palette,
+      this.domain, this.sortFunction);
+
+    boxes = boxes.filter( b => !b.hidden);
 
     this.graphicContext = this.preparePane(this.data, this.lookAndFeel, this.graphicContext);
 
@@ -305,7 +311,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   }
 
-  prepareDataModel(data: number[][], labels: string[], palette: string[], domain: number[],
+  prepareDataModel(data: number[][], removed: number[], labels: string[], palette: string[], domain: number[],
                    sortFunction: (b1: BoxDefinition, b2: BoxDefinition) => number): BoxDefinition[] {
 
     let boxes = this.boxUtil.dataToBoxes(data);
@@ -314,6 +320,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.labelBoxes(boxes, labels);
 
     this.colorBoxes(boxes, palette);
+
+    removed.forEach( ix => {
+      if (boxes[ix]) {
+        boxes[ix].hidden = true;
+      }
+    });
 
     boxes = boxes.sort(sortFunction);
     return boxes;
@@ -414,11 +426,13 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       newLabels.on('mouseover', function (d, i) {
         d3.select(this)
           .selectAll(".yLabel")
-          .style("visibility", "visible");
+          //.style("visibility", "visible");
+          .style("display", null);
       }).on('mouseout', function () {
         d3.select(this)
           .selectAll(".yLabel")
-          .style("visibility", "hidden");
+          //.style("visibility", "hidden");
+          .style("display", "none");
       });
     });
 
@@ -430,7 +444,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     newLabels.append<SVGGElement>("rect")
       .attr("class", "yLabel")
       .style("fill-opacity", 0.35)
-      .style("visibility", "hidden");
+      //.style("visibility", "hidden");
+      .style("display", "none");
+      ;
 
     newLabels.append<SVGGElement>('text')
       .attr("class", "yLabel")
@@ -439,7 +455,9 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .style("font-size", lookAndFeel.labelFont)
       .style("opacity", 1)
       .attr('x', 5)
-      .style("visibility", "hidden");
+      //.style("visibility", "hidden");
+      //.style("display", "none");
+      ;
 
     let backLabels = graphicContext.backLabelsWrapper.selectAll("g.yLabel")
       .data(backLabelsOn ? boxes : []);
@@ -481,21 +499,26 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       let bboxes: SVGRect[] = [];
 
       enterUpdate.select<SVGSVGElement>("text")
+        .style("display", null)
         .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
         .text(d => d.label)
         .each(function (d) {
           bboxes.push(this.getBBox());
           //console.log("D: " + d.label, this.getBBox());
-        });
+        })
+        .style("display", "none");
+
+
 
       backEnterUpdate.select<SVGSVGElement>("text")
         .attr('y', d => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
         .text(d => d.label)
         //.style("fill", d => d.color)
-        .each(function (d) {
+        /*.each(function (d) {
           bboxes.push(this.getBBox());
           //console.log("D: " + d.label, this.getBBox());
-        });
+        });*/
+        ;
 
       let trigers = enterUpdate.select<SVGSVGElement>(".yTrigger")
         .style("fill", d => d.color)
@@ -566,7 +589,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     ;
 
     graphicContext.tooltipWrapper
-      .style("visibility", "hidden");
+      //.style("visibility", "hidden");
+      .style("display", "none");
 
     return graphicContext;
   }
@@ -595,7 +619,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("height", bbox.height + 4);
 
     this.graphicContext.tooltipWrapper
-      .style("visibility", "visible")
+      //.style("visibility", "visible");
+      .style("display", null);
     ;
 
   };
@@ -608,7 +633,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     ;
 
     this.graphicContext.tooltipWrapper
-      .style("visibility", "hidden")
+      //.style("visibility", "hidden");
+      .style("display", "none");
     ;
 
     //this.graphicContext.tooltipText
@@ -846,7 +872,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("x2", (d, i) => graphicContext.xScale(d.median))
       .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth())
       .style("stroke", d => d.color)
-      .style("visibility", d => d.mean === d.median ? "hidden" : "visible");
+      //.style("visibility", d => d.mean === d.median ? "hidden" : "visible");
+      .style("display", d => d.mean === d.median ? "none" : null);
 
     ;
 
@@ -897,8 +924,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("x2", (d, i) => left ? graphicContext.xScale(d.fstQnt) : graphicContext.xScale(d.highWskr))
       .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth() / 2)
       .style("stroke", d => d.color)
-      .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
-
+      //.style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
+      .style("display", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "none" : null);
     ;
 
   }
@@ -912,7 +939,8 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr("x2", (d, i) => left ? graphicContext.xScale(d.lowWskr) : graphicContext.xScale(d.highWskr))
       .attr("y2", (d, i) => graphicContext.yScale(d.key) + graphicContext.yScale.bandwidth())
       .style("stroke", d => d.color)
-      .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
+      //.style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
+      .style("display", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "none" : null);
 
     ;
 

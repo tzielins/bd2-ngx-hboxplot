@@ -13,13 +13,19 @@
 
       <div [hidden]="isHidden">
       <bd2-ngx-hbox-plot
-        [data]="data" [labels]="labels" [hidden]="isHidden" [labelsOn]="labelsOn" [sorted]="sorted"
+        [data]="data" [labels]="labels" [hidden]="isHidden" [labelsOn]="labelsOn"
+        [removed]="removed" [sorted]="sorted"
       >
       </bd2-ngx-hbox-plot>
       </div>
       {{detection()}}
     </div>
     <div class="col-sm-3">
+      <div class="form-group">
+        <label>Toggle removed:</label> <a class="btn btn-primary btn-sm" (click)="toggleRemoved()">
+        [{{removed}}]</a>
+      </div>
+
       <div class="form-group">
         <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
       </div>
@@ -37,4 +43,3 @@
     </div>
   </div>
 </div>
-

@@ -374,7 +374,7 @@ describe('HBoxPlotComponent', () => {
     });
 
     it("creates box widgets", () => {
-      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext, sort, false);
+      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext);
 
       expect(graphicContext.dataWrapper).toBeTruthy();
       expect(graphicContext.dataWrapper.selectAll("g.boxWidget").size()).toBe(2);
@@ -395,7 +395,7 @@ describe('HBoxPlotComponent', () => {
       graphicContext.xScale.domain([12, 24]).range([12, 24]);
       expect(graphicContext.xScale(20)).toBe(20);
 
-      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext, sort, false);
+      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext);
 
       expect(graphicContext.dataWrapper).toBeTruthy();
       let widget = graphicContext.dataWrapper.select("g.boxWidget");
@@ -422,7 +422,7 @@ describe('HBoxPlotComponent', () => {
       expect(graphicContext.xScale(20)).toBe(20);
 
       data[0].outliers = [];
-      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext, sort, false);
+      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext);
 
       expect(graphicContext.dataWrapper).toBeTruthy();
       let widget = graphicContext.dataWrapper.select("g.boxWidget");
@@ -444,7 +444,7 @@ describe('HBoxPlotComponent', () => {
       data[0].highWskr = 22 + 1;
       data[0].outliers = [15 + 1];
 
-      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext, sort, false);
+      graphicContext = component.plotDataBoxes(data, lookAndFeel, mainPane, graphicContext);
       expect(widget.select("g.whiskers line.whiskerlineL").node()).toBe(l1);
       expect(widget.select("g.whiskers line.whiskertipL").node()).toBe(l2);
       expect(widget.select("g.box rect").node()).toBe(rect);

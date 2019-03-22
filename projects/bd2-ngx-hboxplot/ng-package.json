@@ -1,0 +1,25 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/bd2-ngx-hboxplot",
+  "whitelistedNonPeerDependencies": [
+    "@types/d3-array",
+    "@types/d3-axis",
+    "@types/d3-scale",
+    "@types/d3-scale-chromatic",
+    "@types/d3-selection",
+    "@types/d3-selection-multi",
+    "@types/d3-shape",
+    "@types/d3-transition",
+    "d3-array",
+    "d3-axis",
+    "d3-scale",
+    "d3-scale-chromatic",
+    "d3-selection",
+    "d3-selection-multi",
+    "d3-shape",
+    "d3-transition"
+  ],
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}

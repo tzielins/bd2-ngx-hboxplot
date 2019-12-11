@@ -2,93 +2,16 @@ import {
   Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy, NgZone, ChangeDetectorRef,
   ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
-import {D3, d3, Selection, ScaleLinear, Transition} from '../../d3service';
-import {Axis} from 'd3-axis';
-import {ScaleBand} from 'd3-scale';
-import {BoxUtil} from '../box-util';
-import {BD2ColorPalette} from '../color-palette';
-import {BoxDefinition} from '../box-dom';
-import {SmartRounder} from '../smart-rounding';
+import {D3, d3} from '../d3service';
+import {Selection} from 'd3-selection';
+import {defualtLookAndFeel, GraphicContext, LookAndFeel, offsetScaleValue} from './hbox-plot.dom';
+import {BoxDefinition} from '../hbox-utils/box-dom';
+import {BoxUtil} from '../hbox-utils/box-util';
+import {BD2ColorPalette} from '../hbox-utils/color-palette';
+import {SmartRounder} from '../hbox-utils/smart-rounding';
 
 
-export class LookAndFeel {
 
-  vMargin = 25;
-  hMarginL = 20;
-  hMarginR = 15;
-  rowWidth = 30;
-  rowGap = 0.2;
-
-  transitionTime = 600;
-
-  boxStrokeWidth = '2px';
-  boxFillOpacity = 0.35;
-  meanStrokeWidth = '4px';
-
-  labelFont = '12px';
-  labelFillOpacity = 0.35;
-  backLabelOpacity = 0.30;
-
-  backdropColor = 'white';
-  backdropOpacity = 1;
-
-  whiskerStrokeWidth = '1px';
-
-  outliersStrokeWidth = '1px';
-  outliersCircleRadius = 3;
-  outliersFillOpacity = 0.4;
-}
-
-
-export let defualtLookAndFeel: () => LookAndFeel = function() {
-  return new LookAndFeel();
-};
-
-export class GraphicContext {
-
-  /*transitionTime: number;
-
-   get transitionOn(): boolean {
-   return (this.transitionTime && this.transitionTime > 0);
-   };*/
-
-  transitionOn: boolean;
-  transition: Transition<any, any, any, any>;
-
-  workspaceWidth: number;
-  workspaceHeight: number;
-
-  axisWrapper: Selection<SVGGElement, any, null, undefined>;
-  xScale: ScaleLinear<number, number>;
-  xTopAxis: Axis<number | { valueOf(): number }>;
-  xBottomAxis: Axis<number | { valueOf(): number }>;
-
-  yScale: ScaleBand<string>;
-  yLeftAxis: Axis<string>;
-  yRightAxis: Axis<string>;
-
-  palette: string[];
-
-  dataWrapper: Selection<SVGGElement, any, null, undefined>;
-
-  tooltipWrapper: Selection<SVGGElement, any, null, undefined>;
-  tooltipText: Selection<SVGGElement, any, null, undefined>;
-  tooltipBox: Selection<SVGGElement, any, null, undefined>;
-
-  labelsWrapper: Selection<SVGGElement, any, null, undefined>;
-  backLabelsWrapper: Selection<SVGGElement, any, null, undefined>;
-}
-
-function offsetScaleValue(x: number, pixOffset: number, scale: ScaleLinear<number, number>) {
-  const r = scale.range();
-  const pos = scale(x) + pixOffset;
-  if (pos < r[0]) {
-    return r[0];
-  } else if (pos > r[1]) {
-    return r[1];
-  }
-  return pos;
-}
 
 
 @Component({
@@ -402,7 +325,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     if (!labels) {
       labels = [];
     }
-    
+
 
     boxes.forEach((b, ix) => {
       b.label = labels[ix] ? labels[ix] : '' + (ix + 1);
@@ -459,7 +382,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .style('fill-opacity', 0.35)
       // .style("visibility", "hidden");
       .style('display', 'none');
-    
+
 
     newLabels.append<SVGGElement>('text')
       .attr('class', 'yLabel')
@@ -637,7 +560,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.graphicContext.tooltipWrapper
     // .style("visibility", "visible");
       .style('display', null);
-    
+
 
   }
 
@@ -646,12 +569,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     if (!this.graphicContext.tooltipText) {
       return;
     }
-    
+
 
     this.graphicContext.tooltipWrapper
     // .style("visibility", "hidden");
       .style('display', 'none');
-    
+
 
     // this.graphicContext.tooltipText
     // .transition().duration(this.lookAndFeel.baseTransitionsTime / 2)
@@ -779,7 +702,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     if (!graphicContext.dataWrapper) {
       graphicContext.dataWrapper = mainPane.append<SVGGElement>('g').attr('class', 'dataWrapper');
     }
-    
+
 
 
     let boxWidgets = graphicContext.dataWrapper.selectAll('.boxWidget') as Selection<SVGGElement, BoxDefinition, null, undefined>;
@@ -886,7 +809,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       // .style("visibility", d => d.mean === d.median ? "hidden" : "visible");
       .style('display', d => d.mean === d.median ? 'none' : null);
 
-    
+
 
   }
 
@@ -938,7 +861,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .style('stroke', d => d.color)
       // .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
       .style('display', d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? 'none' : null);
-    
+
 
   }
 
@@ -954,7 +877,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       // .style("visibility", d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? "hidden" : "visible");
       .style('display', d => (left && (d.lowWskr === d.fstQnt)) || (!left && (d.highWskr === d.thrdQnt)) ? 'none' : null);
 
-    
+
 
   }
 
@@ -1076,7 +999,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .style('fill-opacity', lookAndFeel.backdropOpacity)
       .style('fill', lookAndFeel.backdropColor)
       .call(this.positionBackdrop, graphicContext);
-    
+
 
     const whiskers = newBoxWidgets.append<SVGGElement>('g').attr('class', 'whiskers');
 

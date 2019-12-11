@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import {HboxPlotModule} from "bd2-ngx-hboxplot";
+import {BD2NgxHBoxplotModule} from 'bd2-ngx-hboxplot';
 
 @NgModule({
   declarations: [
@@ -10,7 +10,7 @@ import {HboxPlotModule} from "bd2-ngx-hboxplot";
   ],
   imports: [
     BrowserModule,
-    HboxPlotModule
+    BD2NgxHBoxplotModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,13 +1,13 @@
- Bd2NgxHboxplot
+# Bd2NgxHboxplot
 
-Horizontal Box Plot (Whisker Plot) generated using D3 library.
-The itemes are stacked vertically so that the plot can grow downwards for the
-large data sets.
+Bd2NgxHboxplot
 
-The box/whisker properties (median, quartile) are calculated automatically based on 
-the provided data.
+Horizontal Box Plot (Whisker Plot) generated using D3 library. The itemes are stacked vertically so that the plot can grow downwards for the large data sets.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.6.
+The box/whisker properties (median, quartile) are calculated automatically based on the provided data.
+
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.20.
 
 ## Development server
 

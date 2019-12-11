@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to bd2-ngx-hboxplot-app!');
+    expect(page.getTitleText()).toEqual('bd2-ngx-hboxplot-demo app is running!');
   });
 
   afterEach(async () => {

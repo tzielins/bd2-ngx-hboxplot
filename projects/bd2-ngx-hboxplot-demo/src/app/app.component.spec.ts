@@ -1,6 +1,6 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import {HboxPlotModule} from "bd2-ngx-hboxplot";
+import {BD2NgxHBoxplotModule} from 'bd2-ngx-hboxplot';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -8,7 +8,7 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
-      imports: [HboxPlotModule]
+      imports: [BD2NgxHBoxplotModule]
     }).compileComponents();
   }));
 

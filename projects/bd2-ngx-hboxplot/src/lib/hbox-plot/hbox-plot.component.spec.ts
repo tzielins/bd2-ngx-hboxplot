@@ -1,11 +1,12 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import {HBoxPlotComponent, defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.component';
-import {D3, d3, Selection} from '../../d3service';
-import {BD2ColorPalette} from '../color-palette';
-import {BoxDefinition} from '../box-dom';
-import {BoxUtil} from '../box-util';
-import {main} from '@angular/compiler-cli/src/main';
+import {HBoxPlotComponent} from './hbox-plot.component';
+import {defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.dom';
+import {d3} from '../d3service';
+import {Selection} from 'd3-selection';
+import {BD2ColorPalette} from '../hbox-utils/color-palette';
+import {BoxDefinition} from '../hbox-utils/box-dom';
+import {BoxUtil} from '../hbox-utils/box-util';
 
 describe('HBoxPlotComponent', () => {
   let component: HBoxPlotComponent;

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import {interval, of, Subscription} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -78,10 +80,24 @@ export class AppComponent {
     }
   }
 
+  // for testing fast changing data
+  generateDelayedData() {
+    let s: Subscription;
+    s = interval(10).pipe(
+      take(4)
+    ).subscribe( v => this.generateDataInner(100), err => {}, () => {
+      if (s) { s.unsubscribe(); }
+    });
+  }
+
   generateData() {
+    this.generateDataInner(2);
+  }
+
+  generateDataInner(nrBase = 1) {
     this.ci++;
     //
-    const nr = 1 + Math.random() * 15;
+    const nr = nrBase + Math.random() * 15; // (1 + * 15)
     // console.log("TD: " + this.testData.length);
 
     const d = [];
@@ -121,7 +137,8 @@ export class AppComponent {
 
 
   detection() {
-    console.log('Changed detection ' + this.ci);
+    this.ci++;
+    console.log('Change detection ' + this.ci);
     return 'Change detection';
   }
 }

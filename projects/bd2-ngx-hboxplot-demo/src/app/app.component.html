@@ -9,6 +9,23 @@
   </div>
 
   <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label (click)="toggleRemoved()">Toggle removed:</label> <a class="btn btn-primary btn-sm" (click)="toggleRemoved()">
+        [{{removed}}]</a>
+      </div>
+
+      <div class="form-group">
+        <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
+      </div>
+      <div class="form-group">
+        <label (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label><br>
+        <label (click)="toggleLabels()">Toggle Labels: {{labelsOn}}</label><br>
+        <label (click)="toggleSorted()">Toggle Sorted: {{sorted}}</label><br>
+
+      </div>
+
+    </div>
     <div class="col-sm-9">
 
       <div [hidden]="isHidden">
@@ -20,19 +37,8 @@
       </div>
       {{detection()}}
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-12">
       <div class="form-group">
-        <label>Toggle removed:</label> <a class="btn btn-primary btn-sm" (click)="toggleRemoved()">
-        [{{removed}}]</a>
-      </div>
-
-      <div class="form-group">
-        <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
-      </div>
-      <div class="form-group">
-        <label (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label><br>
-        <label (click)="toggleLabels()">Toggle Labels: {{labelsOn}}</label><br>
-        <label (click)="toggleSorted()">Toggle Sorted: {{sorted}}</label><br>
 
         <label>Data:</label>
         <ul class="list-unstyled" style="margin: 1em;">

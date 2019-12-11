@@ -429,7 +429,10 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     // called with delay to allow, parent divs to component sets their visibility, otherwise the bboxes cannot be calculated
     // and the labels backgrounds and trigers are not rendered correctly
     // it is a hack, but don't know how to do it correctly
-    setTimeout(() => {
+    // timers have to be cleared as otherwise saw errors in logs for fast changing input data (like cause by sorting and pagination)
+    graphicContext.labelsTimers.forEach( timer => clearTimeout(timer));
+    graphicContext.labelsTimers = [];
+    const timer = setTimeout(() => {
 
 
       const bboxes: SVGRect[] = [];
@@ -494,6 +497,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     }, 10);
 
+    graphicContext.labelsTimers.push(timer);
     return graphicContext;
   }
 

@@ -70,6 +70,7 @@ export class GraphicContext {
 
   labelsWrapper: Selection<SVGGElement, any, null, undefined>;
   backLabelsWrapper: Selection<SVGGElement, any, null, undefined>;
+  labelsTimers = [];
 }
 
 export function offsetScaleValue(x: number, pixOffset: number, scale: ScaleLinear<number, number>) {

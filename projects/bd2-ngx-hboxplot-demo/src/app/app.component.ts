@@ -85,13 +85,14 @@ export class AppComponent {
     let s: Subscription;
     s = interval(10).pipe(
       take(4)
-    ).subscribe( v => this.generateDataInner(100), err => {}, () => {
+    ).subscribe( v => this.generateDataInner(10), err => {}, () => {
       if (s) { s.unsubscribe(); }
     });
   }
 
   generateData() {
     this.generateDataInner(2);
+    this.generateDelayedData();
   }
 
   generateDataInner(nrBase = 1) {

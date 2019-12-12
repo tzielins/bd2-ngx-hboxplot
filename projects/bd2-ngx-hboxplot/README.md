@@ -1,23 +1,33 @@
 # Bd2NgxHboxplot
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.14.
+Bd2NgxHboxplot
+
+Horizontal Box Plot (Whisker Plot) generated using D3 library. The itemes are stacked vertically so that the plot can grow downwards for the large data sets.
+
+The box/whisker properties (median, quartile) are calculated automatically based on the provided data.
+
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.20.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
-Run `ng generate component component-name --project bd2-ngx-hboxplot` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project bd2-ngx-hboxplot`.
-> Note: Don't forget to add `--project bd2-ngx-hboxplot` or else it will be added to the default project in your `angular.json` file. 
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 
-Run `ng build bd2-ngx-hboxplot` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Publishing
-
-After building your library with `ng build bd2-ngx-hboxplot`, go to the dist folder `cd dist/bd2-ngx-hboxplot` and run `npm publish`.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
 ## Running unit tests
 
-Run `ng test bd2-ngx-hboxplot` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
 ## Further help
 

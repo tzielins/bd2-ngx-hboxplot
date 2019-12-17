@@ -5,13 +5,21 @@
       <h1>
         {{title}}
       </h1>
+
+      <div>
+        <p>
+          Simple demo of horizontal box plot.
+        </p>
+        <p>Generated trigers generation of multiple data sets to illustrate changes.</p>
+      </div>
+      <hr>
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
-        <label (click)="toggleRemoved()">Toggle removed:</label> <a class="btn btn-primary btn-sm" (click)="toggleRemoved()">
+        <label class="btn btn-primary btn-sm"  (click)="toggleRemoved()">Toggle removed:</label> <a (click)="toggleRemoved()">
         [{{removed}}]</a>
       </div>
 
@@ -19,9 +27,9 @@
         <a class="btn btn-primary btn-sm" (click)="generateData()">generate</a>
       </div>
       <div class="form-group">
-        <label (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label><br>
-        <label (click)="toggleLabels()">Toggle Labels: {{labelsOn}}</label><br>
-        <label (click)="toggleSorted()">Toggle Sorted: {{sorted}}</label><br>
+        <label class="btn btn-primary btn-sm"  (click)="toggleHidden()">Toggle Hidden: {{isHidden}}</label><br>
+        <label class="btn btn-primary btn-sm"  (click)="toggleLabels()">Toggle Labels: {{labelsOn}}</label><br>
+        <label class="btn btn-primary btn-sm" (click)="toggleSorted()">Toggle Sorted: {{sorted}}</label><br>
 
       </div>
 

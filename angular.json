@@ -48,7 +48,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/bd2-ngx-hboxplot-demo",
+            "baseHref": "/bd2-ngx-hboxplot/",
+            "outputPath": "docs",
             "index": "projects/bd2-ngx-hboxplot-demo/src/index.html",
             "main": "projects/bd2-ngx-hboxplot-demo/src/main.ts",
             "polyfills": "projects/bd2-ngx-hboxplot-demo/src/polyfills.ts",
@@ -59,6 +60,7 @@
               "projects/bd2-ngx-hboxplot-demo/src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "projects/bd2-ngx-hboxplot-demo/src/styles.css"
             ],
             "scripts": []

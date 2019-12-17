@@ -83,15 +83,15 @@ export class AppComponent {
   // for testing fast changing data
   generateDelayedData() {
     let s: Subscription;
-    s = interval(10).pipe(
-      take(4)
-    ).subscribe( v => this.generateDataInner(10), err => {}, () => {
+    s = interval(1000).pipe(
+      take(3)
+    ).subscribe( v => this.generateDataInner(4), err => {}, () => {
       if (s) { s.unsubscribe(); }
     });
   }
 
   generateData() {
-    this.generateDataInner(2);
+    // this.generateDataInner(2);
     this.generateDelayedData();
   }
 

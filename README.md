@@ -7,7 +7,7 @@ so that the plot can grow downwards for the large data sets.
 
 The box/whisker properties (median, quartile) are calculated automatically based on the provided data.
 
-Interactive demo: https://tzielins.github.io/bd2-ngx-hboxplot/
+Interactive [demo](https://tzielins.github.io/bd2-ngx-hboxplot/index.html)
 
 ## How to use it
 
@@ -17,7 +17,7 @@ Interactive demo: https://tzielins.github.io/bd2-ngx-hboxplot/
 
 ### Using
 
-1. Import the PolarPlotModule module:
+1. Import the HBoxModule module:
 
 ```
 @NgModule({

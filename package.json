@@ -1,6 +1,6 @@
 {
   "name": "bd2-ngx-hboxplot",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "license": "MIT",
   "keywords": [
     "d3",
@@ -37,7 +37,7 @@
     "@angular/platform-browser-dynamic": "~9.0.2",
     "@angular/router": "~9.0.2",
     "bootstrap": "^4.4.1",
-    "d3": "^5.14.2",
+    "d3": "^5.15.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

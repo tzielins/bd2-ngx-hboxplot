@@ -51,7 +51,7 @@ export class BD2ColorPalette {
   }
 
   static palette(size: number): string[] {
-
+    // if (true) return BD2ColorPalette.extendPalette(['#1f77b4'], size);
     if (size <= BD2ColorPalette.schemeCategory10.length) {
       return BD2ColorPalette.extendPalette(BD2ColorPalette.schemeCategory10, size);
     } else {

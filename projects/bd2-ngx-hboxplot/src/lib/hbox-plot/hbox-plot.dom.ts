@@ -1,5 +1,5 @@
-import {Selection} from 'd3-selection';
-import {Transition} from 'd3-transition';
+import {Selection} from 'types/d3-selection';
+import {Transition} from 'types/d3-transition';
 import {Axis} from 'd3-axis';
 import {ScaleBand, ScaleLinear} from 'd3-scale';
 

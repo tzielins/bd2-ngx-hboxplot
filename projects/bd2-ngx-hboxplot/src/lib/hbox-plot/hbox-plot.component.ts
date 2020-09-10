@@ -3,7 +3,7 @@ import {
   ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
 import {D3, d3} from '../d3service';
-import {Selection} from 'd3-selection';
+import {Selection} from 'types/d3-selection';
 import {defualtLookAndFeel, GraphicContext, LookAndFeel, offsetScaleValue} from './hbox-plot.dom';
 import {BoxDefinition} from '../hbox-utils/box-dom';
 import {BoxUtil} from '../hbox-utils/box-util';
@@ -359,7 +359,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .classed('yLabel', true);
 
     this.ngZone.runOutsideAngular(() => {
-      newLabels.on('mouseover', function(d, i) {
+      newLabels.on('mouseover', function(evnt: MouseEvent, d: BoxDefinition) {
         d3.select(this)
           .selectAll('.yLabel')
           // .style("visibility", "visible");
@@ -540,6 +540,10 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   showTooltip(v: number, x: any, y: any) {
     // console.log("Show: " + v + ";" + this.constructor.name);
+    // console.log('Show: ' + v + '; ' + x + ': ' + y);
+    // console.log('v', SmartRounder.round(v));
+    // console.log('x', this.graphicContext.xScale(x));
+    // console.log('y', this.graphicContext.yScale(y));
 
     if (!this.graphicContext.tooltipText) {
       return;
@@ -953,14 +957,14 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     const instance = this;
 
     this.ngZone.runOutsideAngular(() => {
-      rect.on('mouseover', function(d, i) {
+      rect.on('mouseover', function(evnt: MouseEvent, d: BoxDefinition) {
         instance.showTooltip(d.median, d.median, d.key);
       })
         .on('mouseout', function() {
           instance.hideTooltip();
         });
 
-      median.on('mouseover', function(d, i) {
+      median.on('mouseover', function(evnt: MouseEvent, d: BoxDefinition) {
         instance.showTooltip(d.median, d.median, d.key);
       })
         .on('mouseout', function() {
@@ -980,7 +984,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     // has to be outside angular, to prevent detection
     this.ngZone.runOutsideAngular(() => {
       mean
-        .on('mouseover', function(d, i) {
+        .on('mouseover', function(evnt: MouseEvent, d: BoxDefinition) {
           instance.showTooltip(d.mean, d.mean, d.key);
         })
         .on('mouseout', function() {

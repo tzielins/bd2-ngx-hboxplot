@@ -3,7 +3,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {HBoxPlotComponent} from './hbox-plot.component';
 import {defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.dom';
 import {d3} from '../d3service';
-import {Selection} from 'd3-selection';
+import {Selection} from 'types/d3-selection';
 import {BD2ColorPalette} from '../hbox-utils/color-palette';
 import {BoxDefinition} from '../hbox-utils/box-dom';
 import {BoxUtil} from '../hbox-utils/box-util';

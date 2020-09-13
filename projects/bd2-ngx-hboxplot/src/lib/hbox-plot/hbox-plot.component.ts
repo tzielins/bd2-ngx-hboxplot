@@ -3,7 +3,8 @@ import {
   ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
 import {D3, d3} from '../d3service';
-import {Selection} from 'types/d3-selection';
+
+import {Selection} from 'd3';
 import {defualtLookAndFeel, GraphicContext, LookAndFeel, offsetScaleValue} from './hbox-plot.dom';
 import {BoxDefinition} from '../hbox-utils/box-dom';
 import {BoxUtil} from '../hbox-utils/box-util';

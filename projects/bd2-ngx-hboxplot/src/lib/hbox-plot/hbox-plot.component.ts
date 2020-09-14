@@ -558,6 +558,13 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     // .style('opacity', 1);
     ;
 
+    // I have to change the display here even before the box is ready as
+    // in firefox the getBBox was not working if called with display none
+    // giving NS_ERROR_FAILURE 2147500037
+    this.graphicContext.tooltipWrapper
+      // .style("visibility", "visible");
+      .style('display', null);
+
     const bbox = this.graphicContext.tooltipText.node().getBBox();
 
     this.graphicContext.tooltipBox
@@ -566,9 +573,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .attr('width', bbox.width + 6)
       .attr('height', bbox.height + 4);
 
-    this.graphicContext.tooltipWrapper
-    // .style("visibility", "visible");
-      .style('display', null);
+
 
 
   }

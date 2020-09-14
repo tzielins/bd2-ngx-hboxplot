@@ -1,6 +1,6 @@
 {
   "name": "bd2-ngx-hboxplot",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "license": "MIT",
   "keywords": [
     "d3",
@@ -20,7 +20,7 @@
     "url": "https://github.com/tzielins/bd2-ngx-hboxplot"
   },
   "dependencies": {
-    "d3": "^5.15.0",
+    "d3": "^6.1.1",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
@@ -28,8 +28,8 @@
     "@types/d3": "^5.7.2"
   },
   "peerDependencies": {
-    "@angular/common": "~10.1.0",
-    "@angular/core": "~10.1.0"
+    "@angular/common": "~10.1.1",
+    "@angular/core": "~10.1.1"
 
   }
 }

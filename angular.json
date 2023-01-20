@@ -59,7 +59,6 @@
             "main": "projects/bd2-ngx-hboxplot-demo/src/main.ts",
             "polyfills": "projects/bd2-ngx-hboxplot-demo/src/polyfills.ts",
             "tsConfig": "projects/bd2-ngx-hboxplot-demo/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "projects/bd2-ngx-hboxplot-demo/src/favicon.ico",
               "projects/bd2-ngx-hboxplot-demo/src/assets"
@@ -68,7 +67,13 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "projects/bd2-ngx-hboxplot-demo/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -98,7 +103,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",

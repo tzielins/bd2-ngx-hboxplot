@@ -23,15 +23,15 @@ import {SmartRounder} from '../hbox-utils/smart-rounding';
   `,
   styles: [
       `
-      :host /deep/ .axisWrapper path {
+      :host ::ng-deep .axisWrapper path {
         stroke: gray;
       }
 
-      :host /deep/ .axisWrapper line {
+      :host ::ng-deep .axisWrapper line {
         stroke: gray;
       }
 
-      :host /deep/ .axisWrapper text {
+      :host ::ng-deep .axisWrapper text {
         fill: gray;
       }
     `

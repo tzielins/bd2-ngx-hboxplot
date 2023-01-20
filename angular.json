@@ -143,7 +143,6 @@
       }
     }
   },
-  "defaultProject": "bd2-ngx-hboxplot",
   "cli": {
     "analytics": "42fd57db-a299-42f1-a36a-937243927bc8"
   }

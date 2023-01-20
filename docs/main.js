@@ -147,7 +147,7 @@ AppComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div")(6, "p");
-      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, " Simple demo of horizontal box plot. V 1.11.0 ");
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, " Simple demo of horizontal box plot. V 2.2.0 ");
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "p");
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Generated triggers generation of multiple data sets to illustrate changes.");

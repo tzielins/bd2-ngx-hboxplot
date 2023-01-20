@@ -664,13 +664,12 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
 
 
-    graphicContext.axisWrapper
-      .select('g.xTopAxis')
-      .call(graphicContext.xTopAxis);
+    let elmT = graphicContext.axisWrapper.select('g.xTopAxis')  as any;
+    elmT.call(graphicContext.xTopAxis);
 
-    let elm = graphicContext.axisWrapper.select('g.xBottomAxis') as any;
-    elm = (graphicContext.transitionOn ? elm.transition(graphicContext.transition) : elm);
-    elm
+    let elmB = graphicContext.axisWrapper.select('g.xBottomAxis') as any;
+    elmB = (graphicContext.transitionOn ? elmB.transition(graphicContext.transition) : elmB);
+    elmB
       .attr('transform', 'translate(0,' + graphicContext.workspaceHeight + ')')
       .call(graphicContext.xBottomAxis);
 

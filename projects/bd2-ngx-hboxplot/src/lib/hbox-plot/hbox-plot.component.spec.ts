@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import {HBoxPlotComponent} from './hbox-plot.component';
 import {defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.dom';
@@ -29,7 +29,7 @@ describe('HBoxPlotComponent', () => {
     return null;
   };
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     lookAndFeel = defualtLookAndFeel();
     graphicContext = new GraphicContext();
     TestBed.configureTestingModule({

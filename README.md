@@ -1,73 +1,27 @@
 # Bd2NgxHboxplot
 
-Bd2NgxHboxplot
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.2.
 
-Horizontal Box Plot (Whisker Plot) generated using D3 library. The items are stacked vertically 
-so that the plot can grow downwards for the large data sets.
+## Development server
 
-The box/whisker properties (median, quartile) are calculated automatically based on the provided data.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-Interactive [demo](https://tzielins.github.io/bd2-ngx-hboxplot/index.html)
+## Code scaffolding
 
-## How to use it
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-### Installation
+## Build
 
-`npm install bd2-ngx-hboxplot --save`
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-### Using
+## Running unit tests
 
-1. Import the HBoxModule module:
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-```
-@NgModule({
-...
-  imports: [
-  ...
-    BD2NgxHBoxplotModule
-  ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
+## Running end-to-end tests
 
-2. Place the component in your template:
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-```
-<bd2-ngx-hbox-plot
-  [data]="data" [labels]="labels" [sorted]="sorted">
-</bd2-ngx-polar-plot>
-```
+## Further help
 
-3. Inputs
-
-- `data: number[][]` series of data to represents box plots.
-For example:
-```
-data = [
- [20, 21, 23, 24, 25],
- [18, 18.5, 25.5, 25, 26, 22.8, 25.8, 26, 25.1, 26.8],
- [30],
- [20, 20.5, 20.6],
- [28, 29.7, 28.5],
- [21.5, 29.7, 28.4, 29.5, 24, 24.1, 25.9, 24.7, 23.7, 24.3, 23.4, 24.5, 22.5, 23.7, 23.9, 23.5],
- []
-];
-```
-
-- `domain: [start, end]` values range to be used on x axis.
-
-- optional `palette: string[]`, optional, collors to be used with the data
-
-- optional `labels: string[]`, labels of the data, will be rendered on the left y axis
-
-- optional `labelsOn: 'always' | 'trigger' | 'null'`, if trigger labels text are rendered when hoovered over the label's bar
-
-- optional `lookAndFeel`, some rendering parameters, check the code for options
-
-- optional `removed: number[]`, indexes of the data groups that should be removed from plot. The removed groups are being rendered just hidden so the labels, colors are preserved and bringing them back/removing does not triggers transitions in the not removed petals
-
-## The angular demo project
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.20.
-
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

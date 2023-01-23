@@ -2,7 +2,7 @@
 
 Bd2NgxHboxplot
 
-Horizontal Box Plot (Whisker Plot) generated using D3 library. The items are stacked vertically 
+Horizontal Box Plot (Whisker Plot) generated using D3 library. The items are stacked vertically
 so that the plot can grow downwards for the large data sets.
 
 The box/whisker properties (median, quartile) are calculated automatically based on the provided data.
@@ -42,7 +42,7 @@ export class AppModule { }
 3. Inputs
 
 - `data: number[][]` series of data to represents box plots.
-For example:
+  For example:
 ```
 data = [
  [20, 21, 23, 24, 25],

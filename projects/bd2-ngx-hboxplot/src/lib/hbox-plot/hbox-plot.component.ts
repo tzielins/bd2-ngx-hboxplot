@@ -49,7 +49,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
   @Input()
-  data: number[][];
+  data: number[][] = [];
 
   @Input()
   removed: number[] = [];
@@ -151,7 +151,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       return;
     }
 
-    this.sortChanged = changes.sorted !== undefined;
+    this.sortChanged = changes['sorted'] !== undefined;
 
     if (!this.hidden) {
       this.updatePlot();

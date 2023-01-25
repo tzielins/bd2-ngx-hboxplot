@@ -1,5 +1,6 @@
 import {BoxDefinition} from './box-dom';
-import {d3} from '../d3service';
+//import {d3} from '../d3service';
+import * as d3 from 'd3';
 
 export class BoxUtil {
 

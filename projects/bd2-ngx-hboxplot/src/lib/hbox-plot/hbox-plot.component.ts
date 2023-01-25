@@ -2,7 +2,7 @@ import {
   Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy, NgZone, ChangeDetectorRef,
   ElementRef, SimpleChanges, ChangeDetectionStrategy, EventEmitter, Output
 } from '@angular/core';
-import {D3, d3} from '../d3service';
+import * as d3 from 'd3';
 
 import {Selection} from 'd3';
 import {defualtLookAndFeel, GraphicContext, LookAndFeel, offsetScaleValue} from './hbox-plot.dom';
@@ -102,7 +102,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Output()
   colors = new EventEmitter<string[]>();
 
-  private d3: D3;
+  private d3;
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
   // private removedSVG: Selection<SVGSVGElement, any, null, undefined>;
@@ -166,7 +166,7 @@ export class HBoxPlotComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   initSVG() {
     if (!this.d3Svg) {
       const d3ParentElement = this.d3.select(this.parentNativeElement);
-      this.d3Svg = d3ParentElement.select('.hbox-plot').append<SVGSVGElement>('svg');
+      this.d3Svg = d3ParentElement.select('.hbox-plot').append('svg');
       this.d3Svg.attr('width', '0');
     }
   }

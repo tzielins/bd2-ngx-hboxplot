@@ -2,7 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 
 import {HBoxPlotComponent} from './hbox-plot.component';
 import {defualtLookAndFeel, LookAndFeel, GraphicContext} from './hbox-plot.dom';
-import {d3} from '../d3service';
+import * as d3 from 'd3';
 import {Selection} from 'd3-selection';
 import {BD2ColorPalette} from '../hbox-utils/color-palette';
 import {BoxDefinition} from '../hbox-utils/box-dom';

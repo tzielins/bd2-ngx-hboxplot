@@ -3,5 +3,8 @@
   "dest": "../../dist/bd2-ngx-hboxplot",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies" : [
+    "d3"
+  ]
 }

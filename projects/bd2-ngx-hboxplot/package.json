@@ -1,10 +1,10 @@
 {
   "name": "bd2-ngx-hboxplot",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "license": "MIT",
   "keywords": [
     "d3",
-    "d3 4.x",
+    "d3 7.x",
     "angular",
     "ngx",
     "box plot",
@@ -21,11 +21,11 @@
   },
   "peerDependencies": {
     "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0",
-    "d3": "^7.8.2"
+    "@angular/core": "^15.1.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "d3": "^7.8.2"
   },
   "sideEffects": false
 }
